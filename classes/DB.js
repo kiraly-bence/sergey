@@ -21,4 +21,8 @@ export default class DB {
 
         return rows;
     }
+
+    static async first(statement, params = null) {
+        return (await this.query(statement, params))[0] || null;
+    }
 }

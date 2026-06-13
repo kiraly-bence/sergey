@@ -7,10 +7,10 @@ dayjs.extend(timezone);
 dayjs.extend(duration);
 
 export default class Formatter {
-    static formatTimestamp(timestamp) {
+    static formatTimestamp(timestamp, format = 'YYYY-MM-DD HH:mm:ss') {
         return dayjs(timestamp)
             .tz(process.env.TIMEZONE)
-            .format('YYYY-MM-DD HH:mm:ss');
+            .format(format);
     }
 
     static getFileNameFromUrl(url) {

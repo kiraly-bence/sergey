@@ -30,13 +30,13 @@ export default class MessageFetcher {
             // If there is a previous word
             if (newWords[i - 1]) {
                 // Search for it
-                prev_id = (await DB.query(`
+                prev_id = (await DB.first(`
                     select *
                     from fetched_words
                     where word = :word
                     order by id desc
                     limit 1
-                `, { word: newWords[i - 1] }))[0]?.id;
+                `, { word: newWords[i - 1] }))?.id;
             }
 
             await DB.query(`

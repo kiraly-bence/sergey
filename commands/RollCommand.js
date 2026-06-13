@@ -38,7 +38,7 @@ export default class RollCommand extends Command {
     }
 
     async userPoints(userId, botPoints, max) {
-        let rigging = (await DB.query('select * from roll_riggings where user_id = :userId limit 1', { userId: userId }))[0] ?? null;
+        let rigging = await DB.first('select * from roll_riggings where user_id = :userId limit 1', { userId: userId });
 
         if (!rigging) {
             return Utils.rand(1, max);

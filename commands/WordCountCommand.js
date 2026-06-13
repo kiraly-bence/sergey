@@ -25,7 +25,7 @@ export default class WordCountCommand extends Command {
         let user = interaction.options.getUser('user');
         let word = interaction.options.getString('word');
 
-        let count = (await DB.query(`
+        let count = (await DB.first(`
             select count(*) as count
             from fetched_words
             where author_id = :author_id
@@ -38,7 +38,7 @@ export default class WordCountCommand extends Command {
         `, {
             author_id: user.id,
             word: word.toLowerCase(),
-        }))[0].count;
+        })).count;
 
         let name = user.globalName || user.username;
 
