@@ -82,7 +82,9 @@ export default class Sergey {
         });
 
         this.client.on(Discord.Events.InteractionCreate, async interaction => {
-            if (!interaction.isChatInputCommand()) return;
+            if (!interaction.isChatInputCommand()) {
+                return;
+            }
 
             try {
                 await MiddlewareHandler.call(interaction, [
