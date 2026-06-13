@@ -39,14 +39,9 @@ export default class PrisonCommand extends Command {
                 )
         );
 
+    requiredPermissions = ['PrisonCommand'];
+
     async execute(interaction) {
-        await interaction.deferReply();
-
-        if (!this.isRequestedByOwner(interaction)) {
-            await interaction.editReply('This command can only be used by the bot\'s owner.');
-            return;
-        }
-
         let member = interaction.options.getMember('user');
         let channel = interaction.options.getChannel('channel');
         let durationInMinutes = interaction.options.getInteger('duration');

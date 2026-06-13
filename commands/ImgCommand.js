@@ -15,8 +15,6 @@ export default class ImgCommand extends Command {
         );
 
     async execute(interaction) {
-        await interaction.deferReply();
-
         let keyword = interaction.options.getString('keyword');
         let images = await DuckDuckGo.image_search({ query: keyword });
 

@@ -12,15 +12,10 @@ export default class FreeCommand extends Command {
                 .setDescription('The user you want to free from the prison.')
                 .setRequired(true)
         );
+    
+    requiredPermissions = ['FreeCommand'];
 
     async execute(interaction) {
-        await interaction.deferReply();
-
-        if (!this.isRequestedByOwner(interaction)) {
-            await interaction.editReply('This command can only be used by the bot\'s owner.');
-            return;
-        }
-
         let member = interaction.options.getMember('user');
 
         await Prison.freeUser(member.id, interaction.guild.id);

@@ -15,8 +15,6 @@ export default class WordMostUsedByCommand extends Command {
         );
 
     async execute(interaction) {
-        await interaction.deferReply();
-
         let word = interaction.options.getString('word');
 
         let results = await DB.query(`

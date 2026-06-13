@@ -15,8 +15,6 @@ export default class WordCommand extends Command {
         );
 
     async execute(interaction) {
-        await interaction.deferReply();
-
         let letter = interaction.options.getString('letter');
 
         let word = await DB.first('select * from x_words where word like :letter order by rand() limit 1', { letter: letter + '%' });

@@ -9,6 +9,10 @@ export default class HandleCommand extends Middleware {
             throw new Error(`No command matching ${interaction.commandName} was found.`);
         }
 
+        if (!await command.beforeExecute(interaction)) {
+            return;
+        }
+        
         await command.execute(interaction);
     }
 }

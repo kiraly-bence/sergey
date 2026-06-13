@@ -20,8 +20,6 @@ export default class WordCountCommand extends Command {
         );
 
     async execute(interaction) {
-        await interaction.deferReply();
-
         let user = interaction.options.getUser('user');
         let word = interaction.options.getString('word');
 

@@ -14,8 +14,6 @@ export default class InsultCommand extends Command {
         );
 
     async execute(interaction) {
-        await interaction.deferReply();
-
         let user = interaction.options.getUser('user');
         let insult = await DB.first('select * from insults where is_enabled = 1 order by rand() limit 1');
 

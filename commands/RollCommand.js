@@ -17,8 +17,6 @@ export default class RollCommand extends Command {
         );
 
     async execute(interaction) {
-        await interaction.deferReply();
-
         let max = interaction.options.getInteger('max') ?? 100;
         let botPoints = Utils.rand(1, max);
         let userPoints = await this.userPoints(interaction.user.id, botPoints, max);

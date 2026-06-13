@@ -138,6 +138,12 @@ CREATE TABLE `prisoned_users` (
 	INDEX `voice_channel_id` (`voice_channel_id`) USING BTREE
 );
 
+CREATE TABLE `user_permissions` (
+	`user_id` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`permission` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	UNIQUE INDEX `user_id_permission_id` (`user_id`, `permission`) USING BTREE
+);
+
 ALTER TABLE `fetched_words`
 ADD CONSTRAINT `FK_fetched_words_fetched_words`
 FOREIGN KEY (`prev_id`) REFERENCES `fetched_words`(`id`);

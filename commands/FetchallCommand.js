@@ -9,14 +9,10 @@ export default class FetchallCommand extends Command {
         .setName('fetchall')
         .setDescription('Export and store all messages from the channel.');
 
+    requiredPermissions = ['FetchallCommand'];
+    isEphemeral = true;
+
     async execute(interaction) {
-        await interaction.deferReply({ ephemeral: true });
-
-        if (!this.isRequestedByOwner(interaction)) {
-            await interaction.editReply('This command can only be used by the bot\'s owner.');
-            return;
-        }
-
         let fetchableChannels = await DB.query('select * from fetchable_channels where is_enabled = 1');
 
         await interaction.editReply(`Fetching messages in ${fetchableChannels.length} channels. Check the console for further info.`);

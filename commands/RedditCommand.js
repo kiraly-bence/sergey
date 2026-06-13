@@ -16,8 +16,6 @@ export default class RedditCommand extends Command {
         );
 
     async execute(interaction) {
-        await interaction.deferReply();
-
         let subreddit = interaction.options.getString('subreddit');
         let resp;
 

@@ -29,8 +29,6 @@ export default class ImitateCommand extends Command {
         );
 
     async execute(interaction) {
-        await interaction.deferReply();
-
         let user = interaction.options.getUser('user');
         let days = interaction.options.getInteger('days');
         let maxWords = interaction.options.getInteger('length') ?? 100;

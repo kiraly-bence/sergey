@@ -25,4 +25,7 @@ export default class DB {
     static async first(statement, params = null) {
         return (await this.query(statement, params))[0] || null;
     }
+
+    // TODO: DB.column()
+    // TODO: DB.singleValue() -> DB.first() + DB.column()
 }
