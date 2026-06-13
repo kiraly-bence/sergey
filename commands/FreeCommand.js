@@ -13,7 +13,7 @@ export default class FreeCommand extends Command {
                 .setRequired(true)
         );
     
-    requiredPermissions = ['FreeCommand'];
+    requiredPermissions = ['PrisonCommand'];
 
     async execute(interaction) {
         let member = interaction.options.getMember('user');
