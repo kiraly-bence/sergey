@@ -21,6 +21,7 @@ Sergey is a Discord bot I've created for experimenting. The bot itself is privat
 - Insult someone in the chat with a random insult
 - Roll 1-100 against the bot (with the ability to rig the rolls for certain users)
 - Send scheduled messages
+- Lock a user into a voice channel
 
 ...and more.
 

@@ -2,6 +2,7 @@ import * as Discord from 'discord.js';
 import Log from './Log.js';
 import MessageScheduler from './MessageScheduler.js';
 import LolTracker from './LolTracker.js';
+import Prison from './Prison.js';
 import MiddlewareHandler from './MiddlewareHandler.js';
 import LogToConsole from '../middlewares/LogToConsole.js';
 import FetchWords from '../middlewares/FetchWords.js';
@@ -10,9 +11,11 @@ import AutoReply from '../middlewares/AutoReply.js';
 import HandleCommand from '../middlewares/HandleCommand.js';
 import LogCommand from '../middlewares/LogCommand.js';
 import FetchallCommand from '../commands/FetchallCommand.js';
+import FreeCommand from '../commands/FreeCommand.js';
 import ImgCommand from '../commands/ImgCommand.js';
 import ImitateCommand from '../commands/ImitateCommand.js';
 import InsultCommand from '../commands/InsultCommand.js';
+import PrisonCommand from '../commands/PrisonCommand.js';
 import RedditCommand from '../commands/RedditCommand.js';
 import RollCommand from '../commands/RollCommand.js';
 import TerminateCommand from '../commands/TerminateCommand.js';
@@ -25,9 +28,11 @@ export default class Sergey {
 
     static commands = [
         new FetchallCommand(),
+        new FreeCommand(),
         new ImgCommand(),
         new ImitateCommand(),
         new InsultCommand(),
+        new PrisonCommand(),
         new RedditCommand(),
         new RollCommand(),
         new TerminateCommand(),
@@ -40,6 +45,7 @@ export default class Sergey {
         this.registerCommands();
         this.registerClient();
         await MessageScheduler.init();
+        await Prison.init();
 
         if (process.env.RIOT_API_TOKEN) {
             await LolTracker.init();
@@ -62,6 +68,7 @@ export default class Sergey {
                 Discord.GatewayIntentBits.MessageContent,
                 Discord.GatewayIntentBits.GuildMessageReactions,
                 Discord.GatewayIntentBits.GuildEmojisAndStickers,
+                Discord.GatewayIntentBits.GuildVoiceStates,
             ],
         });
 

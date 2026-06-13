@@ -125,6 +125,19 @@ CREATE TABLE `x_words` (
   UNIQUE KEY `word` (`word`) USING BTREE
 );
 
+CREATE TABLE `prisoned_users` (
+	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`user_id` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`guild_id` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`voice_channel_id` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`expires_at` TIMESTAMP NULL DEFAULT NULL,
+	`freed_at` TIMESTAMP NULL DEFAULT NULL,
+	PRIMARY KEY (`id`) USING BTREE,
+	INDEX `user_id` (`user_id`) USING BTREE,
+	INDEX `guild_id` (`guild_id`) USING BTREE,
+	INDEX `voice_channel_id` (`voice_channel_id`) USING BTREE
+);
+
 ALTER TABLE `fetched_words`
 ADD CONSTRAINT `FK_fetched_words_fetched_words`
 FOREIGN KEY (`prev_id`) REFERENCES `fetched_words`(`id`);
