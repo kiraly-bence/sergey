@@ -22,6 +22,7 @@ import WordMostUsedByCommand from '../commands/WordMostUsedByCommand.js';
 
 export default class Sergey {
     static client;
+
     static commands = [
         new FetchallCommand(),
         new ImgCommand(),
