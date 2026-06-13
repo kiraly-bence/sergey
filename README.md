@@ -15,6 +15,7 @@ Sergey is a Discord bot I've created for experimenting. The bot itself is privat
 - Automatically react to a message with a specific emote if a specific keyword was detected
 - Automatically reply to a message with a specific text if a specific keyword was detected
 - Grab a random image from the internet with the given keywords
+    - Known issue: duckduckgo-images-api stopped working, replace regex in `node_modules/duckduckgo-images-api/src/utils.js` with `/vqd="([^"]+)"/`
 - Grab a random image from the top posts of a Reddit subreddit
 - Track League of Legends players and send a message to the chat whenever they win/lose
 - Insult someone in the chat with a random insult
