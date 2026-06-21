@@ -1,11 +1,11 @@
 {
   "type": "module",
   "dependencies": {
+    "@mudbill/duckduckgo-images-api": "^2.0.1",
     "axios": "^1.7.7",
     "dayjs": "^1.11.13",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
-    "duckduckgo-images-api": "^1.0.5",
     "mysql2": "^3.11.3",
     "node-schedule": "^2.1.1",
     "winston": "^3.15.0",

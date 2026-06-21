@@ -1,7 +1,7 @@
 import Command from './Command.js';
 import * as Discord from 'discord.js';
 import Utils from '../classes/Utils.js';
-import DuckDuckGo from 'duckduckgo-images-api';
+import DuckDuckGo from '@mudbill/duckduckgo-images-api';
 
 export default class ImgCommand extends Command {
     command = new Discord.SlashCommandBuilder()
@@ -16,7 +16,7 @@ export default class ImgCommand extends Command {
 
     async execute(interaction) {
         let keyword = interaction.options.getString('keyword');
-        let images = await DuckDuckGo.image_search({ query: keyword });
+        let images = await DuckDuckGo.imageSearch({ query: keyword });
 
         if (images.length === 0) {
             await interaction.editReply(`No images found with keyword: \`${keyword}\``);
