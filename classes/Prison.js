@@ -58,11 +58,11 @@ export default class Prison {
     static async freeUser(userId, guildId) {
         await DB.query(`
             update prisoned_users
-            set freed_at = now()
+            set cancelled_at = now()
             where user_id = :user_id
             and guild_id = :guild_id
             and (expires_at is null or expires_at > now())
-            and freed_at is null
+            and cancelled_at is null
         `, {
             user_id: userId,
             guild_id: guildId,
@@ -85,7 +85,7 @@ export default class Prison {
             and guild_id = :guild_id
             and voice_channel_id <> :voice_channel_id
             and (expires_at is null or expires_at > now())
-            and freed_at is null
+            and cancelled_at is null
             limit 1
         `, {
             user_id: userId,
