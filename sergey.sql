@@ -70,8 +70,11 @@ CREATE TABLE `insults` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `message` text NOT NULL,
   `is_enabled` tinyint(1) NOT NULL DEFAULT '1',
+  `last_used_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `is_enabled` (`is_enabled`)
+  UNIQUE INDEX `message` (`message`),
+  INDEX `is_enabled` (`is_enabled`),
+  INDEX `last_used_at` (`last_used_at`)
 );
 
 CREATE TABLE `roll_riggings` (
