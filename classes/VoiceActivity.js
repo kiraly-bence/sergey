@@ -6,6 +6,7 @@ import DB from '../classes/DB.js';
 export default class VoiceActivity {
     /**
      * Builds voice sessions from voice_activities rows.
+     * If a session is currently ongoing and hasn't ended yet, it sets the end timestamp to now.
      * 
      * @param {object[]} voiceActivities
      * @returns {object[]}
