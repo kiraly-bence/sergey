@@ -6,12 +6,12 @@ import Prison from './Prison.js';
 import VoiceActivityTracker from './VoiceActivityTracker.js';
 import VoiceActivityReporter from './VoiceActivityReporter.js';
 import MiddlewareHandler from './MiddlewareHandler.js';
-import LogToConsole from '../middlewares/LogToConsole.js';
-import FetchWords from '../middlewares/FetchWords.js';
+import LogMessageToConsole from '../middlewares/LogMessageToConsole.js';
+import FetchWordsFromMessage from '../middlewares/FetchWordsFromMessage.js';
 import AutoReact from '../middlewares/AutoReact.js';
 import AutoReply from '../middlewares/AutoReply.js';
 import HandleCommand from '../middlewares/HandleCommand.js';
-import LogCommand from '../middlewares/LogCommand.js';
+import LogCommandUsageToDatabase from '../middlewares/LogCommandUsageToDatabase.js';
 import FetchallCommand from '../commands/FetchallCommand.js';
 import FreeCommand from '../commands/FreeCommand.js';
 import ImgCommand from '../commands/ImgCommand.js';
@@ -89,8 +89,8 @@ export default class Sergey {
         this.client.on(Discord.Events.MessageCreate, async message => {
             try {
                 await MiddlewareHandler.call(message, [
-                    new LogToConsole(),
-                    new FetchWords(),
+                    new LogMessageToConsole(),
+                    new FetchWordsFromMessage(),
                     new AutoReact(),
                     new AutoReply(),
                 ]);
@@ -107,7 +107,7 @@ export default class Sergey {
             try {
                 await MiddlewareHandler.call(interaction, [
                     new HandleCommand(),
-                    new LogCommand(),
+                    new LogCommandUsageToDatabase(),
                 ]);
             } catch (err) {
                 Log.error(err);
