@@ -94,8 +94,8 @@ export default class VoiceActivityReporter {
 
         const guild = await Sergey.client.guilds.fetch(guildId);
         const pngBuffer = await VoiceActivityChart.generate(voiceActivities, guild.name, interval, 'average');
-
         const channel = await guild.channels.fetch(channelId);
+        
         await channel.send({
             content: this._reportTitle(interval, start),
             files: [new Discord.AttachmentBuilder(pngBuffer, { name: 'voice_activity.png' })],
