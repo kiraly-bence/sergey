@@ -11,21 +11,25 @@ import VoiceActivityYearlyAverageChart from '../charts/VoiceActivity/VoiceActivi
  */
 export default class VoiceActivityReporter {
     static init() {
-        // Daily report - every day at 23:59
-        cron.schedule('59 23 * * *', () => this.sendDailyReports());
+        // Daily report - every day at 0:00
+        cron.schedule('0 0 * * *', async () => await this.sendDailyReports());
 
-        // Weekly report - every Sunday at 23:59
-        cron.schedule('59 23 * * 0', () => this.sendWeeklyReports());
+        // Weekly report - every monday at 0:00
+        cron.schedule('0 0 * * 1', async () => await this.sendWeeklyReports());
 
-        // Yearly report - every Dec 31 at 23:59
-        cron.schedule('59 23 31 12 *', () => this.sendYearlyReports());
+        // Yearly report - every jan 1 at 0:00
+        cron.schedule('0 0 1 1 *', async () => await this.sendYearlyReports());
     }
 
     static async sendDailyReports() {
         const now = new Date();
+        
         const start = new Date(now);
+        start.setDate(now.getDate() - 1); // previous day
         start.setHours(0, 0, 0, 0);
+        
         const end = new Date(now);
+        end.setDate(now.getDate() - 1);
         end.setHours(23, 59, 59, 999);
 
         await this.sendReports('daily', start, end);
@@ -33,21 +37,26 @@ export default class VoiceActivityReporter {
 
     static async sendWeeklyReports() {
         const now = new Date();
-        // Start of the week (Monday)
-        const start = new Date(now);
-        start.setDate(now.getDate() - ((now.getDay() + 6) % 7));
-        start.setHours(0, 0, 0, 0);
+        
+        const dayOfWeek = (now.getDay() + 6) % 7; // 0 = monday
+        
         const end = new Date(now);
+        end.setDate(now.getDate() - dayOfWeek - 1); // previous sunday
         end.setHours(23, 59, 59, 999);
+        
+        const start = new Date(end);
+        start.setDate(end.getDate() - 6); // previous monday
+        start.setHours(0, 0, 0, 0);
 
         await this.sendReports('weekly', start, end);
     }
 
     static async sendYearlyReports() {
         const now = new Date();
-        const start = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
-        const end = new Date(now);
-        end.setHours(23, 59, 59, 999);
+        const previousYear = now.getFullYear() - 1;
+        
+        const start = new Date(previousYear, 0, 1, 0, 0, 0, 0);
+        const end = new Date(previousYear, 11, 31, 23, 59, 59, 999);
 
         await this.sendReports('yearly', start, end);
     }
@@ -86,7 +95,6 @@ export default class VoiceActivityReporter {
             from voice_activities
             where guild_id = :guild_id
             and timestamp between :start and :end
-            and is_enabled = 1
             order by timestamp
         `, {
             guild_id: guildId,
