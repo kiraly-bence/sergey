@@ -52,7 +52,25 @@ export default class Formatter {
         return str;
     }
 
-    static formatSeconds(seconds) {
-        return dayjs.duration(seconds, 'seconds').format('mm:ss');
+    static formatDuration(ms) {
+        const duration = dayjs.duration(ms);
+        const days = Math.floor(duration.asDays());
+        const hours = duration.hours();
+        const minutes = duration.minutes();
+        const seconds = duration.seconds();
+
+        if (days > 0) {
+            return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        if (hours > 0) {
+            return `${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        if (minutes > 0) {
+            return `${minutes}m ${seconds}s`;
+        }
+        
+        return `${seconds}s`;
     }
 }

@@ -4,6 +4,9 @@ import DB from './DB.js';
 import Sergey from './Sergey.js';
 import VoiceActivityChart from './VoiceActivityChart.js';
 
+/**
+ * Responsible for sending automated reports of voice activity on the server.
+ */
 export default class VoiceActivityReporter {
     static init() {
         // Daily report - every day at 23:59

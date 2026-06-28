@@ -212,7 +212,7 @@ export default class LolTracker {
                         },
                         {
                             name: 'Length',
-                            value: Formatter.formatSeconds(match.info.gameDuration),
+                            value: Formatter.formatDuration(match.info.gameDuration * 1000),
                             inline: true,
                         },
                         {

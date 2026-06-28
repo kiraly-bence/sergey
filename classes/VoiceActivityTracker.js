@@ -6,6 +6,9 @@ import Sergey from './Sergey.js';
 import * as Discord from 'discord.js';
 import Formatter from './Formatter.js';
 
+/**
+ * Responsible for tracking voice activity.
+ */
 export default class VoiceActivityTracker {
     /**
      * Initialize voice activity tracker.

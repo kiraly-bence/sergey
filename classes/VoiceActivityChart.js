@@ -1,58 +1,16 @@
 import sharp from 'sharp';
+import VoiceActivity from './VoiceActivity.js';
 
+/**
+ * Responsible for creating charts of voice activity.
+ */
 export default class VoiceActivityChart {
-    /**
-     * @param {object[]} voiceActivities
-     * @returns {{ start: Date, end: Date }[]}
-     */
-    static _buildSessions(voiceActivities) {
-        const rows = [...voiceActivities].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        const sessions = [];
-        let pendingJoin = null;
-
-        for (const row of rows) {
-            if (row.type === 'join') {
-                pendingJoin = new Date(row.timestamp);
-            } else if (row.type === 'leave' && pendingJoin) {
-                sessions.push({ start: pendingJoin, end: new Date(row.timestamp) });
-                pendingJoin = null;
-            }
-        }
-
-        if (pendingJoin) {
-            sessions.push({ start: pendingJoin, end: new Date() });
-        }
-
-        return sessions;
-    }
-
-    /**
-     * Groups voiceActivities by user_id and builds sessions per user.
-     * Returns a map of userId -> sessions.
-     * 
-     * @param {object[]} voiceActivities
-     * @returns {Map<string, { start: Date, end: Date }[]>}
-     */
-    static _buildSessionsByUser(voiceActivities) {
-        const byUser = {};
-        for (const row of voiceActivities) {
-            if (!byUser[row.user_id]) byUser[row.user_id] = [];
-            byUser[row.user_id].push(row);
-        }
-
-        const result = new Map();
-        for (const [userId, rows] of Object.entries(byUser)) {
-            result.set(userId, this._buildSessions(rows));
-        }
-        return result;
-    }
-
     /**
      * @param {object[]} voiceActivities
      * @returns {number[]} 24 probabilities (0–1), one per hour
      */
     static _computeDailyProbabilities(voiceActivities) {
-        const sessions = this._buildSessions(voiceActivities);
+        const sessions = VoiceActivity.buildSessions(voiceActivities);
 
         if (sessions.length === 0) return new Array(24).fill(0);
 
@@ -87,7 +45,7 @@ export default class VoiceActivityChart {
      * @returns {number[]} 7 probabilities (0–1), Monday=0 to Sunday=6
      */
     static _computeWeeklyProbabilities(voiceActivities) {
-        const sessions = this._buildSessions(voiceActivities);
+        const sessions = VoiceActivity.buildSessions(voiceActivities);
 
         if (sessions.length === 0) return new Array(7).fill(0);
 
@@ -125,7 +83,7 @@ export default class VoiceActivityChart {
      * @returns {number[]} 12 probabilities (0–1), January=0 to December=11
      */
     static _computeYearlyProbabilities(voiceActivities) {
-        const sessions = this._buildSessions(voiceActivities);
+        const sessions = VoiceActivity.buildSessions(voiceActivities);
 
         if (sessions.length === 0) return new Array(12).fill(0);
 
@@ -158,7 +116,7 @@ export default class VoiceActivityChart {
      * @returns {number[]} 24 rounded averages, one per hour
      */
     static _computeDailyAverages(voiceActivities) {
-        const sessionsByUser = this._buildSessionsByUser(voiceActivities);
+        const sessionsByUser = VoiceActivity.buildSessionsByUser(voiceActivities);
 
         // Collect all days across all sessions
         const allDates = new Set();
@@ -206,7 +164,7 @@ export default class VoiceActivityChart {
      * @returns {number[]} 7 rounded averages, Monday=0 to Sunday=6
      */
     static _computeWeeklyAverages(voiceActivities) {
-        const sessionsByUser = this._buildSessionsByUser(voiceActivities);
+        const sessionsByUser = VoiceActivity.buildSessionsByUser(voiceActivities);
 
         const allWeeks = new Set();
         for (const sessions of sessionsByUser.values()) {
@@ -254,7 +212,7 @@ export default class VoiceActivityChart {
      * @returns {number[]} 12 rounded averages, January=0 to December=11
      */
     static _computeYearlyAverages(voiceActivities) {
-        const sessionsByUser = this._buildSessionsByUser(voiceActivities);
+        const sessionsByUser = VoiceActivity.buildSessionsByUser(voiceActivities);
 
         const allYears = new Set();
         for (const sessions of sessionsByUser.values()) {

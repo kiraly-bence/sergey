@@ -22,6 +22,8 @@ import RedditCommand from '../commands/RedditCommand.js';
 import RollCommand from '../commands/RollCommand.js';
 import TerminateCommand from '../commands/TerminateCommand.js';
 import VoiceActivityCommand from '../commands/VoiceActivityCommand.js';
+import VoiceActivityAverageCommand from '../commands/VoiceActivityAverageCommand.js';
+import VoiceActivityLeaderboardCommand from '../commands/VoiceActivityLeaderboardCommand.js';
 import WordCommand from '../commands/WordCommand.js';
 import WordCountCommand from '../commands/WordCountCommand.js';
 import WordMostUsedByCommand from '../commands/WordMostUsedByCommand.js';
@@ -40,6 +42,8 @@ export default class Sergey {
         new RollCommand(),
         new TerminateCommand(),
         new VoiceActivityCommand(),
+        new VoiceActivityAverageCommand(),
+        new VoiceActivityLeaderboardCommand(),
         new WordCommand(),
         new WordCountCommand(),
         new WordMostUsedByCommand(),
