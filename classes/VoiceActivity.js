@@ -112,29 +112,35 @@ export default class VoiceActivity {
 
     /**
      * Calculates the average daily session length from session objects.
+     * It accurately handles sessions that go beyond midnight, or multiple sessions on the same day.
      * 
      * @param {*} sessions
      * @returns {number} Average session length in milliseconds
      */
     static calculateAverageDailySessionLength(sessions) {
-        if (sessions.length === 0) {
-            return 0;
-        }
+        if (sessions.length === 0) return 0;
 
-        const totalMs = sessions.reduce((sum, { start, end }) => sum + (end - start), 0);
+        const dailyTotals = new Map();
 
-        const allDates = new Set();
         for (const { start, end } of sessions) {
-            const day = new Date(start);
-            day.setHours(0, 0, 0, 0);
-            const endDay = new Date(end);
-            endDay.setHours(0, 0, 0, 0);
-            while (day <= endDay) {
-                allDates.add(day.toDateString());
-                day.setDate(day.getDate() + 1);
+            let cursor = new Date(start);
+
+            while (cursor < end) {
+                const dayKey = cursor.toDateString();
+                const midnight = new Date(cursor);
+                midnight.setHours(24, 0, 0, 0); // start of next day
+
+                const segmentEnd = midnight < end ? midnight : end;
+                const ms = segmentEnd - cursor;
+
+                dailyTotals.set(dayKey, (dailyTotals.get(dayKey) ?? 0) + ms);
+                cursor = midnight;
             }
         }
 
-        return totalMs / allDates.size;
+        const total = [...dailyTotals.values()].reduce((sum, ms) => sum + ms, 0);
+        return total / dailyTotals.size;
     }
 }
+
+// TODO: a leaderboard-ban lehetne egy total is, nem csak a napi átlag
