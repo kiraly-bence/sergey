@@ -3,25 +3,25 @@ import DB from '../classes/DB.js';
 import VoiceActivityChart from '../classes/VoiceActivityChart.js';
 import * as Discord from 'discord.js';
 
-export default class VoiceActivityCommand extends Command {
+export default class VoiceActivityChartCommand extends Command {
     command = new Discord.SlashCommandBuilder()
-        .setName('voice-activity')
-        .setDescription('Show voice activity statistics.')
+        .setName('voice-activity-chart')
+        .setDescription('Show a chart of the average voice activity.')
         .addStringOption(option =>
             option
                 .setName('type')
-                .setDescription('The type of voice activity to display.')
+                .setDescription('Select the intervals to calculate averages for.')
                 .addChoices(
-                    { name: 'daily', value: 'daily' },
-                    { name: 'weekly', value: 'weekly' },
-                    { name: 'yearly', value: 'yearly' },
+                    { name: 'hours (0-24)', value: 'daily' },
+                    { name: 'days (Monday-Sunday)', value: 'weekly' },
+                    { name: 'months (January-December)', value: 'yearly' },
                 )
                 .setRequired(true)
         )
         .addUserOption(option =>
             option
                 .setName('user')
-                .setDescription('The user you want to view voice activity for.')
+                .setDescription('The user whose voice activity you want to see.')
         );
 
     async execute(interaction) {

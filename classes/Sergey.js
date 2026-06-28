@@ -21,8 +21,8 @@ import PrisonCommand from '../commands/PrisonCommand.js';
 import RedditCommand from '../commands/RedditCommand.js';
 import RollCommand from '../commands/RollCommand.js';
 import TerminateCommand from '../commands/TerminateCommand.js';
-import VoiceActivityCommand from '../commands/VoiceActivityCommand.js';
-import VoiceActivityAverageCommand from '../commands/VoiceActivityAverageCommand.js';
+import VoiceActivityChartCommand from '../commands/VoiceActivityChartCommand.js';
+import VoiceActivityDailyAverageCommand from '../commands/VoiceActivityDailyAverageCommand.js';
 import VoiceActivityLeaderboardCommand from '../commands/VoiceActivityLeaderboardCommand.js';
 import WordCommand from '../commands/WordCommand.js';
 import WordCountCommand from '../commands/WordCountCommand.js';
@@ -41,8 +41,8 @@ export default class Sergey {
         new RedditCommand(),
         new RollCommand(),
         new TerminateCommand(),
-        new VoiceActivityCommand(),
-        new VoiceActivityAverageCommand(),
+        new VoiceActivityChartCommand(),
+        new VoiceActivityDailyAverageCommand(),
         new VoiceActivityLeaderboardCommand(),
         new WordCommand(),
         new WordCountCommand(),

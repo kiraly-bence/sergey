@@ -3,14 +3,14 @@ import Formatter from '../classes/Formatter.js';
 import VoiceActivity from '../classes/VoiceActivity.js';
 import * as Discord from 'discord.js';
 
-export default class VoiceActivityAverageCommand extends Command {
+export default class VoiceActivityDailyAverageCommand extends Command {
     command = new Discord.SlashCommandBuilder()
-        .setName('voice-activity-average')
-        .setDescription('Show the average time a user spends in voice channels.')
+        .setName('voice-activity-daily-average')
+        .setDescription('Check the average time a user spends in voice channels daily.')
         .addUserOption(option =>
             option
                 .setName('user')
-                .setDescription('The user you want to see the average voice usage for.')
+                .setDescription('The user whose average daily voice activity you want to check.')
                 .setRequired(true)
         );
 
