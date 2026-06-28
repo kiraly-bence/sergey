@@ -3,7 +3,7 @@ import VoiceActivity from '../../classes/VoiceActivity.js';
 
 export default class VoiceActivityWeeklyProbabilityChart extends BaseVoiceActivityChart {
     static labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    static subtitle = 'Chance of the user being in a voice channel (on each day)';
+    static subtitle = 'Chance of the user being in a voice channel (by days)';
 
     /**
      * @param {object[]} voiceActivities

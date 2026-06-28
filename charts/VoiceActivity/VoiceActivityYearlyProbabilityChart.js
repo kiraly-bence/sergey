@@ -3,11 +3,9 @@ import VoiceActivity from '../../classes/VoiceActivity.js';
 
 export default class VoiceActivityDailyProbabilityChart extends BaseVoiceActivityChart {
     static labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    static subtitle = 'Chance of the user being in a voice channel (in each month)';
+    static subtitle = 'Chance of the user being in a voice channel (by months)';
 
     /**
-     * Calculates the chance of a user being in a voice channel in each month of the year.
-     * 
      * @param {object[]} voiceActivities
      * @returns {number[]} 12 probabilities (0–1), January=0 to December=11
      */

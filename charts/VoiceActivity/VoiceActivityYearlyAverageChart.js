@@ -6,8 +6,6 @@ export default class VoiceActivityYearlyAverageChart extends BaseVoiceActivityCh
     static subtitle = 'Average number of users in voice channels (by months)';
 
     /**
-     * Calculates the average number of users in voice channels in each month of the year.
-     * 
      * @param {object[]} voiceActivities
      * @returns {number[]} 24 rounded averages, one per hour
      */
