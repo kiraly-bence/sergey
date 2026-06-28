@@ -2,7 +2,9 @@ import cron from 'node-cron';
 import Discord from 'discord.js';
 import DB from './DB.js';
 import Sergey from './Sergey.js';
-import VoiceActivityChart from './VoiceActivityChart.js';
+import VoiceActivityDailyAverageChart from '../charts/VoiceActivity/VoiceActivityDailyAverageChart.js';
+import VoiceActivityWeeklyAverageChart from '../charts/VoiceActivity/VoiceActivityWeeklyAverageChart.js';
+import VoiceActivityYearlyAverageChart from '../charts/VoiceActivity/VoiceActivityYearlyAverageChart.js';
 
 /**
  * Responsible for sending automated reports of voice activity on the server.
@@ -96,9 +98,15 @@ export default class VoiceActivityReporter {
             return;
         }
 
+        const charts = {
+            daily: VoiceActivityDailyAverageChart,
+            weekly: VoiceActivityWeeklyAverageChart,
+            yearly: VoiceActivityYearlyAverageChart,
+        };
+
         const guild = await Sergey.client.guilds.fetch(guildId);
-        const pngBuffer = await VoiceActivityChart.generate(voiceActivities, guild.name, interval, 'average');
         const channel = await guild.channels.fetch(channelId);
+        const pngBuffer = await charts[interval].generate(voiceActivities, guild.name, interval, 'average');
 
         await channel.send({
             content: this.reportTitle(interval, start),

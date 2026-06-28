@@ -59,7 +59,7 @@ export default class VoiceActivity {
      * @param {*} guildId
      * @returns {Promise<number>} The average daily voice usage in milliseconds
      */
-    static async getAverageDailyVoiceUsage(userId, guildId) {
+    static async getAverageDailyVoiceUsageOfUser(userId, guildId) {
         const voiceActivities = await DB.query(`
             select *
             from voice_activities
@@ -73,7 +73,7 @@ export default class VoiceActivity {
 
         const sessions = this.buildSessions(voiceActivities);
 
-        return this.computeAverageDailyMs(sessions);
+        return this.calculateAverageSessionLength(sessions);
     }
 
     /**
@@ -97,7 +97,7 @@ export default class VoiceActivity {
         const results = [];
 
         for (const [userId, sessions] of sessionsByUser) {
-            const avgMs = this.computeAverageDailyMs(sessions);
+            const avgMs = this.calculateAverageSessionLength(sessions);
 
             results.push({
                 userId: userId,
@@ -116,7 +116,7 @@ export default class VoiceActivity {
      * @param {*} sessions
      * @returns {number} Average session length in milliseconds
      */
-    static computeAverageDailyMs(sessions) {
+    static calculateAverageSessionLength(sessions) {
         if (sessions.length === 0) {
             return 0;
         }

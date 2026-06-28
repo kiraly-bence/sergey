@@ -18,7 +18,7 @@ export default class VoiceActivityDailyAverageCommand extends Command {
         let user = interaction.options.getUser('user');
         let name = user.globalName || user.username;
 
-        const avgMs = await VoiceActivity.getAverageDailyVoiceUsage(user.id, interaction.guild.id);
+        const avgMs = await VoiceActivity.getAverageDailyVoiceUsageOfUser(user.id, interaction.guild.id);
         const formattedDuration = Formatter.formatDuration(avgMs);
 
         await interaction.editReply(`${name} spends ${formattedDuration} in voice channels on average per day.`);

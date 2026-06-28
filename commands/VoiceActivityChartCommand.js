@@ -1,6 +1,11 @@
 import Command from './Command.js';
 import DB from '../classes/DB.js';
-import VoiceActivityChart from '../classes/VoiceActivityChart.js';
+import VoiceActivityDailyAverageChart from '../charts/VoiceActivity/VoiceActivityDailyAverageChart.js';
+import VoiceActivityDailyProbabilityChart from '../charts/VoiceActivity/VoiceActivityDailyProbabilityChart.js';
+import VoiceActivityWeeklyAverageChart from '../charts/VoiceActivity/VoiceActivityWeeklyAverageChart.js';
+import VoiceActivityWeeklyProbabilityChart from '../charts/VoiceActivity/VoiceActivityWeeklyProbabilityChart.js';
+import VoiceActivityYearlyAverageChart from '../charts/VoiceActivity/VoiceActivityYearlyAverageChart.js';
+import VoiceActivityYearlyProbabilityChart from '../charts/VoiceActivity/VoiceActivityYearlyProbabilityChart.js';
 import * as Discord from 'discord.js';
 
 export default class VoiceActivityChartCommand extends Command {
@@ -27,14 +32,16 @@ export default class VoiceActivityChartCommand extends Command {
     async execute(interaction) {
         let user = interaction.options.getUser('user') || null;
         let interval = interaction.options.getString('interval');
+
         let calculationType = user
             ? 'probability'
             : 'average';
+
         let displayName = user
             ? (user.globalName || user.username)
             : interaction.guild.name;
 
-        const voiceActivites = await DB.query(`
+        const voiceActivities = await DB.query(`
             select *
             from voice_activities
             where (:user_id is null or user_id = :user_id)
@@ -45,7 +52,27 @@ export default class VoiceActivityChartCommand extends Command {
             guild_id: interaction.guild.id,
         });
 
-        const pngBuffer = await VoiceActivityChart.generate(voiceActivites, displayName, interval, calculationType);
+        const charts = {
+            daily: {
+                average: VoiceActivityDailyAverageChart,
+                probability: VoiceActivityDailyProbabilityChart,
+            },
+            weekly: {
+                average: VoiceActivityWeeklyAverageChart,
+                probability: VoiceActivityWeeklyProbabilityChart,
+            },
+            yearly: {
+                average: VoiceActivityYearlyAverageChart,
+                probability: VoiceActivityYearlyProbabilityChart,
+            },
+        };
+
+        const pngBuffer = await charts[interval][calculationType].generate(
+            voiceActivities,
+            displayName,
+            interval,
+            calculationType,
+        );
 
         await interaction.editReply({
             files: [new Discord.AttachmentBuilder(pngBuffer, { name: 'voice_activity.png' })],
