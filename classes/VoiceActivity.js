@@ -12,15 +12,14 @@ export default class VoiceActivity {
      * @returns {object[]}
      */
     static buildSessions(voiceActivities) {
-        const rows = [...voiceActivities].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
         const sessions = [];
         let pendingJoin = null;
 
-        for (const row of rows) {
-            if (row.type === 'join') {
-                pendingJoin = new Date(row.timestamp);
-            } else if (row.type === 'leave' && pendingJoin) {
-                sessions.push({ start: pendingJoin, end: new Date(row.timestamp) });
+        for (const voiceActivity of voiceActivities) {
+            if (voiceActivity.type === 'join') {
+                pendingJoin = new Date(voiceActivity.timestamp);
+            } else if (voiceActivity.type === 'leave' && pendingJoin) {
+                sessions.push({ start: pendingJoin, end: new Date(voiceActivity.timestamp) });
                 pendingJoin = null;
             }
         }
@@ -41,14 +40,14 @@ export default class VoiceActivity {
      */
     static buildSessionsByUser(voiceActivities) {
         const byUser = {};
-        for (const row of voiceActivities) {
-            if (!byUser[row.user_id]) byUser[row.user_id] = [];
-            byUser[row.user_id].push(row);
+        for (const voiceActivity of voiceActivities) {
+            if (!byUser[voiceActivity.user_id]) byUser[voiceActivity.user_id] = [];
+            byUser[voiceActivity.user_id].push(voiceActivity);
         }
 
         const result = new Map();
-        for (const [userId, rows] of Object.entries(byUser)) {
-            result.set(userId, this.buildSessions(rows));
+        for (const [userId, voiceActivitiesByUser] of Object.entries(byUser)) {
+            result.set(userId, this.buildSessions(voiceActivitiesByUser));
         }
         return result;
     }
@@ -143,5 +142,71 @@ export default class VoiceActivity {
 
         const total = [...dailyTotals.values()].reduce((sum, ms) => sum + ms, 0);
         return total / dailyTotals.size;
+    }
+
+    /**
+     * Returns the last voice session of a user.
+     * 
+     * @param {string} userId
+     * @param {string} guildId
+     * @returns {Promise<object>}
+     */
+    static async getLastSession(userId, guildId) {
+        // TODO: lehet nem is külön kéne menteni a join/leave activity-ket, hanem voice_sessions tábla kéne, ahol van start meg end oszlop is
+        // és akkor nem is kell manuálisan felbuildelni őket, hanem eleve készen jön az adat a DB-ből
+        // + így könnyebb az adathibákat is javítani
+        const lastJoin = await DB.first(`
+            select *
+            from voice_activities
+            where user_id = :user_id
+            and guild_id = :guild_id
+            and type = 'join'
+            order by timestamp desc
+            limit 1
+        `, {
+            user_id: userId,
+            guild_id: guildId,
+        });
+
+        const lastLeave = await DB.first(`
+            select *
+            from voice_activities
+            where user_id = :user_id
+            and guild_id = :guild_id
+            and type = 'leave'
+            order by timestamp desc
+            limit 1
+        `, {
+            user_id: userId,
+            guild_id: guildId,
+        });
+
+        let voiceActivities = [];
+
+        if (lastJoin) {
+            voiceActivities.push(lastJoin);
+        } else {
+            return null;
+        }
+
+        if (lastLeave) {
+            voiceActivities.push(lastLeave);
+        }
+
+        const sessions = this.buildSessions(voiceActivities);
+
+        if (sessions.length === 0) {
+            return null;
+        }
+
+        const lastSession = sessions[sessions.length - 1];
+        const isOngoing = !lastLeave;
+
+        return {
+            isOngoing: isOngoing,
+            start: lastSession.start,
+            end: lastSession.end,
+            length: lastSession.end - lastSession.start,
+        };
     }
 }
