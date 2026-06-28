@@ -73,7 +73,7 @@ export default class VoiceActivity {
 
         const sessions = this.buildSessions(voiceActivities);
 
-        return this.calculateAverageSessionLength(sessions);
+        return this.calculateAverageDailySessionLength(sessions);
     }
 
     /**
@@ -97,7 +97,7 @@ export default class VoiceActivity {
         const results = [];
 
         for (const [userId, sessions] of sessionsByUser) {
-            const avgMs = this.calculateAverageSessionLength(sessions);
+            const avgMs = this.calculateAverageDailySessionLength(sessions);
 
             results.push({
                 userId: userId,
@@ -111,12 +111,12 @@ export default class VoiceActivity {
     }
 
     /**
-     * Calculates the average session length from session objects.
+     * Calculates the average daily session length from session objects.
      * 
      * @param {*} sessions
      * @returns {number} Average session length in milliseconds
      */
-    static calculateAverageSessionLength(sessions) {
+    static calculateAverageDailySessionLength(sessions) {
         if (sessions.length === 0) {
             return 0;
         }
