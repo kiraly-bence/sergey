@@ -147,6 +147,31 @@ CREATE TABLE `user_permissions` (
 	UNIQUE INDEX `user_id_permission_id` (`user_id`, `permission`) USING BTREE
 );
 
+CREATE TABLE `voice_activities` (
+	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`user_id` VARCHAR(255) NOT NULL,
+	`guild_id` VARCHAR(255) NOT NULL,
+	`voice_channel_id` VARCHAR(255) NOT NULL,
+	`type` ENUM('join','leave') NOT NULL,
+	`timestamp` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+	PRIMARY KEY (`id`),
+	INDEX `user_id` (`user_id`),
+	INDEX `voice_channel_id` (`voice_channel_id`),
+	INDEX `type` (`type`),
+	INDEX `guild_id` (`guild_id`)
+);
+
+CREATE TABLE `voice_activity_reports` (
+	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`guild_id` VARCHAR(255) NOT NULL,
+	`channel_id` VARCHAR(255) NOT NULL,
+	`description` VARCHAR(255) NULL DEFAULT NULL,
+	`is_enabled` TINYINT(1) NOT NULL DEFAULT '1',
+	PRIMARY KEY (`id`),
+	UNIQUE INDEX `guild_id` (`guild_id`),
+	INDEX `is_enabled` (`is_enabled`)
+);
+
 ALTER TABLE `fetched_words`
 ADD CONSTRAINT `FK_fetched_words_fetched_words`
 FOREIGN KEY (`prev_id`) REFERENCES `fetched_words`(`id`);

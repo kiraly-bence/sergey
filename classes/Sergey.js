@@ -3,6 +3,8 @@ import Log from './Log.js';
 import MessageScheduler from './MessageScheduler.js';
 import LolTracker from './LolTracker.js';
 import Prison from './Prison.js';
+import VoiceActivityTracker from './VoiceActivityTracker.js';
+import VoiceActivityReporter from './VoiceActivityReporter.js';
 import MiddlewareHandler from './MiddlewareHandler.js';
 import LogToConsole from '../middlewares/LogToConsole.js';
 import FetchWords from '../middlewares/FetchWords.js';
@@ -19,6 +21,7 @@ import PrisonCommand from '../commands/PrisonCommand.js';
 import RedditCommand from '../commands/RedditCommand.js';
 import RollCommand from '../commands/RollCommand.js';
 import TerminateCommand from '../commands/TerminateCommand.js';
+import VoiceActivityCommand from '../commands/VoiceActivityCommand.js';
 import WordCommand from '../commands/WordCommand.js';
 import WordCountCommand from '../commands/WordCountCommand.js';
 import WordMostUsedByCommand from '../commands/WordMostUsedByCommand.js';
@@ -36,6 +39,7 @@ export default class Sergey {
         new RedditCommand(),
         new RollCommand(),
         new TerminateCommand(),
+        new VoiceActivityCommand(),
         new WordCommand(),
         new WordCountCommand(),
         new WordMostUsedByCommand(),
@@ -46,6 +50,8 @@ export default class Sergey {
         this.registerClient();
         await MessageScheduler.init();
         await Prison.init();
+        await VoiceActivityTracker.init();
+        await VoiceActivityReporter.init();
 
         if (process.env.RIOT_API_TOKEN) {
             await LolTracker.init();

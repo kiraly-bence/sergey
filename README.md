@@ -60,6 +60,7 @@ node migrate.js
     - Fill the `scheduled_messages` table with your own scheduled messages
     - Fill the `tracked_lol_users` table with League of Legends players you want to track
     - Fill the `user_permissions` table with the permissions you want to give to each user (including yourself)
+    - Fill the `voice_activity_reports` table with Discord server IDs and channel IDs where you want the bot to automatically send daily/weekly/yearly reports about voice activity
     - Fill the `x_words` table with your own preferred words to use for the `/word` command
 
 - Start the bot
