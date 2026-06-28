@@ -71,6 +71,7 @@ export default class Sergey {
     }
 
     static registerClient() {
+        // TODO: meg lehetne csinálni azt, hogy a különböző providerek adják hozzá a nekik kellő intent-eket a client-hez
         this.client = new Discord.Client({
             intents: [
                 Discord.GatewayIntentBits.Guilds,
@@ -86,6 +87,7 @@ export default class Sergey {
             Log.console(`Connected as ${this.client.user.tag}`);
         });
 
+        // TODO: ezt ki lehetne szervezni 4 különböző providerbe
         this.client.on(Discord.Events.MessageCreate, async message => {
             try {
                 await MiddlewareHandler.call(message, [
@@ -99,6 +101,7 @@ export default class Sergey {
             }
         });
 
+        // TODO: ezt ki lehetne szervezni 2 külön providerbe
         this.client.on(Discord.Events.InteractionCreate, async interaction => {
             if (!interaction.isChatInputCommand()) {
                 return;
@@ -113,6 +116,8 @@ export default class Sergey {
                 Log.error(err);
             }
         });
+
+        // TODO: a cél az lenne, hogy a providerek ilyen ki-be kapcsolható elemekként működjenek, és elég legyen csak 1 helyen hozzáadni/kiszedni őket, ne kelljen vadászni a különböző middleware-eket, intent-eket stb.
 
         this.client.login(process.env.TOKEN);
     }

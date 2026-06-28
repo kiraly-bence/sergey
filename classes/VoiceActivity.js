@@ -32,6 +32,63 @@ export default class VoiceActivity {
     }
 
     /**
+     * Builds sessions from raw join/leave activity rows.
+     *
+     * @param {Array<{id: string, user_id: string, guild_id: string, voice_channel_id: string, type: 'join'|'leave', timestamp: Date}>} activities
+     * @return {Array<{user_id: string, guild_id: string, voice_channel_id: string, join: Date, leave: Date|null}>}
+     */
+    static buildSessions_migrate(activities) {
+        const sessions = [];
+
+        // Group by user+guild
+        const groups = {};
+        for (const activity of activities) {
+            const key = `${activity.user_id}:${activity.guild_id}`;
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(activity);
+        }
+
+        for (const rows of Object.values(groups)) {
+            // Ensure chronological order
+            rows.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+            let openSession = null;
+
+            for (const row of rows) {
+                if (row.type === 'join') {
+                    if (openSession) {
+                        // Two joins in a row — data error, close the previous one without a leave
+                        sessions.push(openSession);
+                    }
+                    openSession = {
+                        user_id:          row.user_id,
+                        guild_id:         row.guild_id,
+                        voice_channel_id: row.voice_channel_id,
+                        join:             row.timestamp,
+                        leave:            null,
+                    };
+
+                } else if (row.type === 'leave') {
+                    if (!openSession) {
+                        // Leave with no matching join — skip it
+                        continue;
+                    }
+                    openSession.leave = row.timestamp;
+                    sessions.push(openSession);
+                    openSession = null;
+                }
+            }
+
+            // Any session still open at the end had no matching leave
+            if (openSession) {
+                sessions.push(openSession);
+            }
+        }
+
+        return sessions;
+    }
+
+    /**
      * Groups voiceActivities by user_id and builds sessions per user.
      * Returns a map of userId -> sessions.
      * 
@@ -120,7 +177,10 @@ export default class VoiceActivity {
      * @returns {number} Average session length in milliseconds
      */
     static calculateAverageDailySessionLength(sessions) {
-        if (sessions.length === 0) return 0;
+        // TODO: az isOngoing session-öket nem kéne beleszámolni (hisz nem tudjuk előre, hogy meddig fog tartani)
+        if (sessions.length === 0) {
+            return 0;
+        }
 
         const dailyTotals = new Map();
 
@@ -152,9 +212,6 @@ export default class VoiceActivity {
      * @returns {Promise<object>}
      */
     static async getLastSession(userId, guildId) {
-        // TODO: lehet nem is külön kéne menteni a join/leave activity-ket, hanem voice_sessions tábla kéne, ahol van start meg end oszlop is
-        // és akkor nem is kell manuálisan felbuildelni őket, hanem eleve készen jön az adat a DB-ből
-        // + így könnyebb az adathibákat is javítani
         const lastJoin = await DB.first(`
             select *
             from voice_activities
