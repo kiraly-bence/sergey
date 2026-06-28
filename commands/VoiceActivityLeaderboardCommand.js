@@ -16,11 +16,12 @@ export default class VoiceActivityLeaderboardCommand extends Command {
             return;
         }
 
-        const lines = await Promise.all(leaderboard.map(async ({ userId, avgMs }, i) => {
+        const lines = await Promise.all(leaderboard.map(async ({ userId, totalMs, avgMs }, i) => {
             const user = await interaction.guild.members.fetch(userId);
-            const formattedDuration = Formatter.formatDuration(avgMs);
+            const totalUsage = Formatter.formatDuration(totalMs);
+            const averageDailyUsage = Formatter.formatDuration(avgMs);
 
-            return `${i + 1}. ${user.displayName}: ${formattedDuration}`;
+            return `**${i + 1}. ${user.displayName}:** ${totalUsage} (daily average: ${averageDailyUsage})`;
         }));
 
         await interaction.editReply(lines.join('\n'));

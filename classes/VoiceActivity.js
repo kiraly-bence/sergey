@@ -97,16 +97,18 @@ export default class VoiceActivity {
         const results = [];
 
         for (const [userId, sessions] of sessionsByUser) {
+            const totalMs = sessions.reduce((sum, { start, end }) => sum + (end - start), 0);
             const avgMs = this.calculateAverageDailySessionLength(sessions);
 
             results.push({
                 userId: userId,
+                totalMs: totalMs,
                 avgMs: avgMs,
             });
         }
 
         return results
-            .sort((a, b) => b.avgMs - a.avgMs)
+            .sort((a, b) => b.totalMs - a.totalMs)
             .slice(0, 10);
     }
 
@@ -142,5 +144,3 @@ export default class VoiceActivity {
         return total / dailyTotals.size;
     }
 }
-
-// TODO: a leaderboard-ban lehetne egy total is, nem csak a napi átlag
