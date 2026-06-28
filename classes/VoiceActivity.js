@@ -5,8 +5,10 @@ import DB from '../classes/DB.js';
  */
 export default class VoiceActivity {
     /**
+     * Builds voice sessions from voice_activities rows.
+     * 
      * @param {object[]} voiceActivities
-     * @returns {{ start: Date, end: Date }[]}
+     * @returns {object[]}
      */
     static buildSessions(voiceActivities) {
         const rows = [...voiceActivities].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -34,7 +36,7 @@ export default class VoiceActivity {
      * Returns a map of userId -> sessions.
      * 
      * @param {object[]} voiceActivities
-     * @returns {Map<string, { start: Date, end: Date }[]>}
+     * @returns {Map<string, object[]>}
      */
     static buildSessionsByUser(voiceActivities) {
         const byUser = {};
@@ -53,8 +55,8 @@ export default class VoiceActivity {
     /**
      * Returns the average daily voice usage for a user in a guild.
      * 
-     * @param {*} userId 
-     * @param {*} guildId 
+     * @param {*} userId
+     * @param {*} guildId
      * @returns {Promise<number>} The average daily voice usage in milliseconds
      */
     static async getAverageDailyVoiceUsage(userId, guildId) {
@@ -71,7 +73,7 @@ export default class VoiceActivity {
 
         const sessions = this.buildSessions(voiceActivities);
 
-        return this._computeAverageDailyMs(sessions);
+        return this.computeAverageDailyMs(sessions);
     }
 
     /**
@@ -95,7 +97,7 @@ export default class VoiceActivity {
         const results = [];
 
         for (const [userId, sessions] of sessionsByUser) {
-            const avgMs = this._computeAverageDailyMs(sessions);
+            const avgMs = this.computeAverageDailyMs(sessions);
 
             results.push({
                 userId: userId,
@@ -108,7 +110,13 @@ export default class VoiceActivity {
             .slice(0, 10);
     }
 
-    static _computeAverageDailyMs(sessions) {
+    /**
+     * Calculates the average session length from session objects.
+     * 
+     * @param {*} sessions
+     * @returns {number} Average session length in milliseconds
+     */
+    static computeAverageDailyMs(sessions) {
         if (sessions.length === 0) {
             return 0;
         }

@@ -10,26 +10,26 @@ import VoiceActivityChart from './VoiceActivityChart.js';
 export default class VoiceActivityReporter {
     static init() {
         // Daily report - every day at 23:59
-        cron.schedule('59 23 * * *', () => this._sendDailyReports());
+        cron.schedule('59 23 * * *', () => this.sendDailyReports());
 
         // Weekly report - every Sunday at 23:59
-        cron.schedule('59 23 * * 0', () => this._sendWeeklyReports());
+        cron.schedule('59 23 * * 0', () => this.sendWeeklyReports());
 
         // Yearly report - every Dec 31 at 23:59
-        cron.schedule('59 23 31 12 *', () => this._sendYearlyReports());
+        cron.schedule('59 23 31 12 *', () => this.sendYearlyReports());
     }
 
-    static async _sendDailyReports() {
+    static async sendDailyReports() {
         const now = new Date();
         const start = new Date(now);
         start.setHours(0, 0, 0, 0);
         const end = new Date(now);
         end.setHours(23, 59, 59, 999);
 
-        await this._sendReports('daily', start, end);
+        await this.sendReports('daily', start, end);
     }
 
-    static async _sendWeeklyReports() {
+    static async sendWeeklyReports() {
         const now = new Date();
         // Start of the week (Monday)
         const start = new Date(now);
@@ -38,29 +38,31 @@ export default class VoiceActivityReporter {
         const end = new Date(now);
         end.setHours(23, 59, 59, 999);
 
-        await this._sendReports('weekly', start, end);
+        await this.sendReports('weekly', start, end);
     }
 
-    static async _sendYearlyReports() {
+    static async sendYearlyReports() {
         const now = new Date();
         const start = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
         const end = new Date(now);
         end.setHours(23, 59, 59, 999);
 
-        await this._sendReports('yearly', start, end);
+        await this.sendReports('yearly', start, end);
     }
 
     /**
+     * Sends voice activity reports in each guild.
+     * 
      * @param {'daily' | 'weekly' | 'yearly'} interval
      * @param {Date} start
      * @param {Date} end
      */
-    static async _sendReports(interval, start, end) {
+    static async sendReports(interval, start, end) {
         const reports = await DB.query('select * from voice_activity_reports');
 
         for (const report of reports) {
             try {
-                await this._sendGuildReport(report.guild_id, report.channel_id, interval, start, end);
+                await this.sendGuildReport(report.guild_id, report.channel_id, interval, start, end);
             } catch (error) {
                 console.error(`Failed to send ${interval} voice activity report for guild ${report.guild_id}:`, error);
             }
@@ -68,13 +70,15 @@ export default class VoiceActivityReporter {
     }
 
     /**
+     * Sends a voice activity report in a specific guild.
+     * 
      * @param {string} guildId
      * @param {string} channelId
      * @param {'daily' | 'weekly' | 'yearly'} interval
      * @param {Date} start
      * @param {Date} end
      */
-    static async _sendGuildReport(guildId, channelId, interval, start, end) {
+    static async sendGuildReport(guildId, channelId, interval, start, end) {
         const voiceActivities = await DB.query(`
             select *
             from voice_activities
@@ -97,17 +101,19 @@ export default class VoiceActivityReporter {
         const channel = await guild.channels.fetch(channelId);
 
         await channel.send({
-            content: this._reportTitle(interval, start),
+            content: this.reportTitle(interval, start),
             files: [new Discord.AttachmentBuilder(pngBuffer, { name: 'voice_activity.png' })],
         });
     }
 
     /**
+     * Generates the message content of a voice activity report.
+     * 
      * @param {'daily' | 'weekly' | 'yearly'} interval
      * @param {Date} start
      * @returns {string}
      */
-    static _reportTitle(interval, start) {
+    static reportTitle(interval, start) {
         switch (interval) {
             case 'daily':
                 return `📊 Daily voice activity report for ${start.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;

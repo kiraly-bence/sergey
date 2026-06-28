@@ -6,10 +6,12 @@ import VoiceActivity from './VoiceActivity.js';
  */
 export default class VoiceActivityChart {
     /**
+     * Calculates the chance of a user being in a voice channel in each hour of the day.
+     * 
      * @param {object[]} voiceActivities
      * @returns {number[]} 24 probabilities (0–1), one per hour
      */
-    static _computeDailyProbabilities(voiceActivities) {
+    static computeDailyProbabilities(voiceActivities) {
         const sessions = VoiceActivity.buildSessions(voiceActivities);
 
         if (sessions.length === 0) return new Array(24).fill(0);
@@ -41,10 +43,12 @@ export default class VoiceActivityChart {
     }
 
     /**
+     * Calculates the chance of a user being in a voice channel in each day of the week.
+     * 
      * @param {object[]} voiceActivities
      * @returns {number[]} 7 probabilities (0–1), Monday=0 to Sunday=6
      */
-    static _computeWeeklyProbabilities(voiceActivities) {
+    static computeWeeklyProbabilities(voiceActivities) {
         const sessions = VoiceActivity.buildSessions(voiceActivities);
 
         if (sessions.length === 0) return new Array(7).fill(0);
@@ -79,10 +83,12 @@ export default class VoiceActivityChart {
     }
 
     /**
+     * Calculates the chance of a user being in a voice channel in each month of the year.
+     * 
      * @param {object[]} voiceActivities
      * @returns {number[]} 12 probabilities (0–1), January=0 to December=11
      */
-    static _computeYearlyProbabilities(voiceActivities) {
+    static computeYearlyProbabilities(voiceActivities) {
         const sessions = VoiceActivity.buildSessions(voiceActivities);
 
         if (sessions.length === 0) return new Array(12).fill(0);
@@ -112,10 +118,12 @@ export default class VoiceActivityChart {
     }
 
     /**
+     * Calculates the average number of users in voice channels in each hour of the day.
+     * 
      * @param {object[]} voiceActivities
      * @returns {number[]} 24 rounded averages, one per hour
      */
-    static _computeDailyAverages(voiceActivities) {
+    static computeDailyAverages(voiceActivities) {
         const sessionsByUser = VoiceActivity.buildSessionsByUser(voiceActivities);
 
         // Collect all days across all sessions
@@ -160,10 +168,12 @@ export default class VoiceActivityChart {
     }
 
     /**
+     * Calculates the average number of users in voice channels in each day of the week.
+     * 
      * @param {object[]} voiceActivities
      * @returns {number[]} 7 rounded averages, Monday=0 to Sunday=6
      */
-    static _computeWeeklyAverages(voiceActivities) {
+    static computeWeeklyAverages(voiceActivities) {
         const sessionsByUser = VoiceActivity.buildSessionsByUser(voiceActivities);
 
         const allWeeks = new Set();
@@ -208,10 +218,12 @@ export default class VoiceActivityChart {
     }
 
     /**
+     * Calculates the average number of users in voice channels in each month of the year.
+     * 
      * @param {object[]} voiceActivities
      * @returns {number[]} 12 rounded averages, January=0 to December=11
      */
-    static _computeYearlyAverages(voiceActivities) {
+    static computeYearlyAverages(voiceActivities) {
         const sessionsByUser = VoiceActivity.buildSessionsByUser(voiceActivities);
 
         const allYears = new Set();
@@ -252,6 +264,8 @@ export default class VoiceActivityChart {
     }
 
     /**
+     * Builds the raw SVG data.
+     * 
      * @param {number[]} values Array of values to display
      * @param {string[]} labels Labels for each bar
      * @param {string} displayName Display name for the chart title
@@ -335,6 +349,8 @@ export default class VoiceActivityChart {
     }
 
     /**
+     * Generates the PNG buffer of a voice activity chart.
+     * 
      * @param {object[]} voiceActivities voice_activities rows
      * @param {string} displayName Display name for the chart title
      * @param {'daily' | 'weekly' | 'yearly'} interval
@@ -346,33 +362,33 @@ export default class VoiceActivityChart {
             daily: {
                 labels: Array.from({ length: 24 }, (_, i) => i.toString()),
                 probability: {
-                    compute: () => this._computeDailyProbabilities(voiceActivities),
+                    compute: () => this.computeDailyProbabilities(voiceActivities),
                     subtitle: 'Probability of being in voice per hour',
                 },
                 average: {
-                    compute: () => this._computeDailyAverages(voiceActivities),
+                    compute: () => this.computeDailyAverages(voiceActivities),
                     subtitle: 'Average number of users in voice per hour',
                 },
             },
             weekly: {
                 labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                 probability: {
-                    compute: () => this._computeWeeklyProbabilities(voiceActivities),
+                    compute: () => this.computeWeeklyProbabilities(voiceActivities),
                     subtitle: 'Probability of being in voice per day of week',
                 },
                 average: {
-                    compute: () => this._computeWeeklyAverages(voiceActivities),
+                    compute: () => this.computeWeeklyAverages(voiceActivities),
                     subtitle: 'Average number of users in voice per day of week',
                 },
             },
             yearly: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 probability: {
-                    compute: () => this._computeYearlyProbabilities(voiceActivities),
+                    compute: () => this.computeYearlyProbabilities(voiceActivities),
                     subtitle: 'Probability of being in voice per month',
                 },
                 average: {
-                    compute: () => this._computeYearlyAverages(voiceActivities),
+                    compute: () => this.computeYearlyAverages(voiceActivities),
                     subtitle: 'Average number of users in voice per month',
                 },
             },
