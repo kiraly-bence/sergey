@@ -51,18 +51,18 @@ export default class VoiceActivityReporter {
     }
 
     /**
-     * @param {'daily' | 'weekly' | 'yearly'} periodType
+     * @param {'daily' | 'weekly' | 'yearly'} interval
      * @param {Date} start
      * @param {Date} end
      */
-    static async _sendReports(periodType, start, end) {
+    static async _sendReports(interval, start, end) {
         const reports = await DB.query('select * from voice_activity_reports');
 
         for (const report of reports) {
             try {
-                await this._sendGuildReport(report.guild_id, report.channel_id, periodType, start, end);
+                await this._sendGuildReport(report.guild_id, report.channel_id, interval, start, end);
             } catch (error) {
-                console.error(`Failed to send ${periodType} voice activity report for guild ${report.guild_id}:`, error);
+                console.error(`Failed to send ${interval} voice activity report for guild ${report.guild_id}:`, error);
             }
         }
     }
@@ -70,11 +70,11 @@ export default class VoiceActivityReporter {
     /**
      * @param {string} guildId
      * @param {string} channelId
-     * @param {'daily' | 'weekly' | 'yearly'} periodType
+     * @param {'daily' | 'weekly' | 'yearly'} interval
      * @param {Date} start
      * @param {Date} end
      */
-    static async _sendGuildReport(guildId, channelId, periodType, start, end) {
+    static async _sendGuildReport(guildId, channelId, interval, start, end) {
         const voiceActivities = await DB.query(`
             select *
             from voice_activities
@@ -93,22 +93,22 @@ export default class VoiceActivityReporter {
         }
 
         const guild = await Sergey.client.guilds.fetch(guildId);
-        const pngBuffer = await VoiceActivityChart.generate(voiceActivities, guild.name, periodType, 'average');
+        const pngBuffer = await VoiceActivityChart.generate(voiceActivities, guild.name, interval, 'average');
 
         const channel = await guild.channels.fetch(channelId);
         await channel.send({
-            content: this._reportTitle(periodType, start),
+            content: this._reportTitle(interval, start),
             files: [new Discord.AttachmentBuilder(pngBuffer, { name: 'voice_activity.png' })],
         });
     }
 
     /**
-     * @param {'daily' | 'weekly' | 'yearly'} periodType
+     * @param {'daily' | 'weekly' | 'yearly'} interval
      * @param {Date} start
      * @returns {string}
      */
-    static _reportTitle(periodType, start) {
-        switch (periodType) {
+    static _reportTitle(interval, start) {
+        switch (interval) {
             case 'daily':
                 return `📊 Daily voice activity report for ${start.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
             case 'weekly':

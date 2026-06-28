@@ -256,10 +256,10 @@ export default class VoiceActivityChart {
      * @param {string[]} labels Labels for each bar
      * @param {string} displayName Display name for the chart title
      * @param {string} subtitle Subtitle for the chart
-     * @param {'probability' | 'average'} mode
+     * @param {'probability' | 'average'} calculationType
      * @returns {string} SVG string
      */
-    static buildSVG(values, labels, displayName, subtitle, mode) {
+    static buildSVG(values, labels, displayName, subtitle, calculationType) {
         const W = 900;
         const H = 400;
         const padLeft = 60;
@@ -272,7 +272,9 @@ export default class VoiceActivityChart {
         const barW = chartW / count;
         const gap = 3;
 
-        const maxValue = mode === 'probability' ? 1 : Math.max(...values, 1);
+        const maxValue = calculationType === 'probability'
+            ? 1
+            : Math.max(...values, 1);
 
         const bars = values.map((v, i) => {
             const x = padLeft + i * barW + gap / 2;
@@ -286,7 +288,7 @@ export default class VoiceActivityChart {
             const b = Math.round(242 - p * 50);
             const alpha = 0.3 + p * 0.7;
 
-            const label = mode === 'probability'
+            const label = calculationType === 'probability'
                 ? (v > 0.05 ? (v * 100).toFixed(0) + '%' : '')
                 : (v > 0 ? v.toString() : '');
 
@@ -305,7 +307,7 @@ export default class VoiceActivityChart {
 
         const gridLines = [0.25, 0.5, 0.75, 1.0].map(v => {
             const y = padTop + chartH - v * chartH;
-            const gridLabel = mode === 'probability'
+            const gridLabel = calculationType === 'probability'
                 ? (v * 100).toFixed(0) + '%'
                 : Math.round(v * maxValue).toString();
             return `<line x1="${padLeft}" y1="${y.toFixed(1)}" x2="${padLeft + chartW}" y2="${y.toFixed(1)}" 
@@ -335,11 +337,11 @@ export default class VoiceActivityChart {
     /**
      * @param {object[]} voiceActivities voice_activities rows
      * @param {string} displayName Display name for the chart title
-     * @param {'daily' | 'weekly' | 'yearly'} periodType
-     * @param {'probability' | 'average'} chartType
+     * @param {'daily' | 'weekly' | 'yearly'} interval
+     * @param {'probability' | 'average'} calculationType
      * @returns {Promise<Buffer>} PNG buffer
      */
-    static async generate(voiceActivities, displayName, periodType, chartType) {
+    static async generate(voiceActivities, displayName, interval, calculationType) {
         const config = {
             daily: {
                 labels: Array.from({ length: 24 }, (_, i) => i.toString()),
@@ -376,16 +378,16 @@ export default class VoiceActivityChart {
             },
         };
 
-        if (!config[periodType]) {
-            throw new Error(`Unknown period type: ${periodType}`);
+        if (!config[interval]) {
+            throw new Error(`Unknown interval: ${interval}`);
         }
         
-        if (!config[periodType][chartType]) {
-            throw new Error(`Unknown chart type: ${chartType}`);
+        if (!config[interval][calculationType]) {
+            throw new Error(`Unknown calculation type: ${calculationType}`);
         }
 
-        const { labels, [chartType]: { compute, subtitle } } = config[periodType];
-        const svg = this.buildSVG(compute(), labels, displayName, subtitle, chartType);
+        const { labels, [calculationType]: { compute, subtitle } } = config[interval];
+        const svg = this.buildSVG(compute(), labels, displayName, subtitle, calculationType);
         return await sharp(Buffer.from(svg)).png().toBuffer();
     }
 }

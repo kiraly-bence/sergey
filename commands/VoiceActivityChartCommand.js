@@ -9,7 +9,7 @@ export default class VoiceActivityChartCommand extends Command {
         .setDescription('Show a chart of the average voice activity.')
         .addStringOption(option =>
             option
-                .setName('type')
+                .setName('interval')
                 .setDescription('Select the intervals to calculate averages for.')
                 .addChoices(
                     { name: 'hours (0-24)', value: 'daily' },
@@ -26,8 +26,8 @@ export default class VoiceActivityChartCommand extends Command {
 
     async execute(interaction) {
         let user = interaction.options.getUser('user') || null;
-        let periodType = interaction.options.getString('type');
-        let chartType = user
+        let interval = interaction.options.getString('interval');
+        let calculationType = user
             ? 'probability'
             : 'average';
         let displayName = user
@@ -45,7 +45,7 @@ export default class VoiceActivityChartCommand extends Command {
             guild_id: interaction.guild.id,
         });
 
-        const pngBuffer = await VoiceActivityChart.generate(voiceActivites, displayName, periodType, chartType);
+        const pngBuffer = await VoiceActivityChart.generate(voiceActivites, displayName, interval, calculationType);
 
         await interaction.editReply({
             files: [new Discord.AttachmentBuilder(pngBuffer, { name: 'voice_activity.png' })],
