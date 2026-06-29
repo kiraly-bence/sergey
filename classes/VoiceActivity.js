@@ -87,7 +87,7 @@ export default class VoiceActivity {
         const sessionsByUser = this.buildSessionsByUser(sessions);
         const results = [];
 
-        for (const [userId, userSessions] of sessionsByUser) {
+        for (const [userId, userSessions] of Object.entries(sessionsByUser)) {
             const totalMs = userSessions.reduce((sum, { start, end }) => sum + (end - start), 0);
             const avgMs = this.calculateAverageDailySessionLength(userSessions);
 

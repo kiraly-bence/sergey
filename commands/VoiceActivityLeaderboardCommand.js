@@ -24,6 +24,6 @@ export default class VoiceActivityLeaderboardCommand extends Command {
             return `**${i + 1}. ${user.displayName}:** ${totalUsage} (daily average: ${averageDailyUsage})`;
         }));
 
-        await interaction.editReply(lines.join('\n'));
+        await interaction.editReply('Total time spent in voice channels:\n\n' + lines.join('\n'));
     }
 }
