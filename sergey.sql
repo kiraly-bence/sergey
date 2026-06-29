@@ -38,7 +38,7 @@ CREATE TABLE `emotes` (
   UNIQUE KEY `key` (`name`) USING BTREE
 );
 
-CREATE TABLE `fetchable_channels` (
+CREATE TABLE `exportable_channels` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `channel_id` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE `fetchable_channels` (
   KEY `is_enabled` (`is_enabled`)
 );
 
-CREATE TABLE `fetched_words` (
+CREATE TABLE `exported_words` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `word` varchar(255) NOT NULL,
   `prev_id` bigint(20) unsigned DEFAULT NULL,
@@ -75,6 +75,13 @@ CREATE TABLE `insults` (
   UNIQUE INDEX `message` (`message`),
   INDEX `is_enabled` (`is_enabled`),
   INDEX `last_used_at` (`last_used_at`)
+);
+
+CREATE TABLE `random_words` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `word` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `word` (`word`) USING BTREE
 );
 
 CREATE TABLE `roll_riggings` (
@@ -121,13 +128,6 @@ CREATE TABLE `tracked_lol_users` (
   KEY `is_enabled` (`is_enabled`)
 );
 
-CREATE TABLE `x_words` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `word` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `word` (`word`) USING BTREE
-);
-
 CREATE TABLE `prisoned_users` (
 	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`user_id` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
@@ -147,6 +147,17 @@ CREATE TABLE `user_permissions` (
 	UNIQUE INDEX `user_id_permission_id` (`user_id`, `permission`) USING BTREE
 );
 
+CREATE TABLE `voice_activity_reports` (
+	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`guild_id` VARCHAR(255) NOT NULL,
+	`channel_id` VARCHAR(255) NOT NULL,
+	`description` VARCHAR(255) NULL DEFAULT NULL,
+	`is_enabled` TINYINT(1) NOT NULL DEFAULT '1',
+	PRIMARY KEY (`id`),
+	UNIQUE INDEX `guild_id` (`guild_id`),
+	INDEX `is_enabled` (`is_enabled`)
+);
+
 CREATE TABLE `voice_sessions` (
 	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`user_id` VARCHAR(255) NOT NULL,
@@ -162,20 +173,9 @@ CREATE TABLE `voice_sessions` (
 	INDEX `left_at` (`left_at`)
 );
 
-CREATE TABLE `voice_activity_reports` (
-	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-	`guild_id` VARCHAR(255) NOT NULL,
-	`channel_id` VARCHAR(255) NOT NULL,
-	`description` VARCHAR(255) NULL DEFAULT NULL,
-	`is_enabled` TINYINT(1) NOT NULL DEFAULT '1',
-	PRIMARY KEY (`id`),
-	UNIQUE INDEX `guild_id` (`guild_id`),
-	INDEX `is_enabled` (`is_enabled`)
-);
-
-ALTER TABLE `fetched_words`
-ADD CONSTRAINT `FK_fetched_words_fetched_words`
-FOREIGN KEY (`prev_id`) REFERENCES `fetched_words`(`id`);
+ALTER TABLE `exported_words`
+ADD CONSTRAINT `FK_exported_words_exported_words`
+FOREIGN KEY (`prev_id`) REFERENCES `exported_words`(`id`);
 
 ALTER TABLE `tracked_lol_matches`
 ADD CONSTRAINT `tracked_lol_matches_user_id_foreign`

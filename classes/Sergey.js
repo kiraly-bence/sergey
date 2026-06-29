@@ -7,24 +7,24 @@ import VoiceActivityTracker from './VoiceActivityTracker.js';
 import VoiceActivityReporter from './VoiceActivityReporter.js';
 import MiddlewareHandler from './MiddlewareHandler.js';
 import LogMessageToConsole from '../middlewares/LogMessageToConsole.js';
-import FetchWordsFromMessage from '../middlewares/FetchWordsFromMessage.js';
+import ExportWordsFromMessage from '../middlewares/ExportWordsFromMessage.js';
 import AutoReact from '../middlewares/AutoReact.js';
 import AutoReply from '../middlewares/AutoReply.js';
 import HandleCommand from '../middlewares/HandleCommand.js';
 import LogCommandUsageToDatabase from '../middlewares/LogCommandUsageToDatabase.js';
-import FetchallCommand from '../commands/FetchallCommand.js';
+import ExportAllMessagesCommand from '../commands/ExportAllMessagesCommand.js';
 import FreeCommand from '../commands/FreeCommand.js';
 import ImgCommand from '../commands/ImgCommand.js';
 import ImitateCommand from '../commands/ImitateCommand.js';
 import InsultCommand from '../commands/InsultCommand.js';
 import PrisonCommand from '../commands/PrisonCommand.js';
+import RandomWordCommand from '../commands/RandomWordCommand.js';
 import RedditCommand from '../commands/RedditCommand.js';
 import RollCommand from '../commands/RollCommand.js';
 import TerminateCommand from '../commands/TerminateCommand.js';
 import VoiceActivityChartCommand from '../commands/VoiceActivityChartCommand.js';
 import VoiceActivityDailyAverageCommand from '../commands/VoiceActivityDailyAverageCommand.js';
 import VoiceActivityLeaderboardCommand from '../commands/VoiceActivityLeaderboardCommand.js';
-import WordCommand from '../commands/WordCommand.js';
 import WordCountCommand from '../commands/WordCountCommand.js';
 import WordMostUsedByCommand from '../commands/WordMostUsedByCommand.js';
 
@@ -32,19 +32,19 @@ export default class Sergey {
     static client;
 
     static commands = [
-        new FetchallCommand(),
+        new ExportAllMessagesCommand(),
         new FreeCommand(),
         new ImgCommand(),
         new ImitateCommand(),
         new InsultCommand(),
         new PrisonCommand(),
+        new RandomWordCommand(),
         new RedditCommand(),
         new RollCommand(),
         new TerminateCommand(),
         new VoiceActivityChartCommand(),
         new VoiceActivityDailyAverageCommand(),
         new VoiceActivityLeaderboardCommand(),
-        new WordCommand(),
         new WordCountCommand(),
         new WordMostUsedByCommand(),
     ];
@@ -92,7 +92,7 @@ export default class Sergey {
             try {
                 await MiddlewareHandler.call(message, [
                     new LogMessageToConsole(),
-                    new FetchWordsFromMessage(),
+                    new ExportWordsFromMessage(),
                     new AutoReact(),
                     new AutoReply(),
                 ]);

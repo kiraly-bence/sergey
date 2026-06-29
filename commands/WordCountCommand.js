@@ -4,7 +4,7 @@ import * as Discord from 'discord.js';
 
 export default class WordCountCommand extends Command {
     command = new Discord.SlashCommandBuilder()
-        .setName('wordcount')
+        .setName('word-count')
         .setDescription('Count how many times someone has used a certain word.')
         .addUserOption(option =>
             option
@@ -25,12 +25,12 @@ export default class WordCountCommand extends Command {
 
         let count = (await DB.first(`
             select count(*) as count
-            from fetched_words
+            from exported_words
             where author_id = :author_id
             and word = :word
             and channel_id in (
                 select channel_id
-                from fetchable_channels
+                from exportable_channels
                 where is_enabled = 1
             )
         `, {

@@ -53,8 +53,8 @@ node migrate.js
     - Fill the `auto_replies` table with your own preferred automatic replies
     - Fill the `emotes` table with your own preferred emotes for the bot to use
         - This is for internal functionalities only. Some of the commands use emotes in the replies, and they are fetched from the database (using this format: `<:name:id>`). If the requested emote isn't found in the database, a fallback emoji will be used instead.
-    - Fill the `fetchable_channels` table with Discord channel IDs you want to export user messages from
-        - This is for the `/fetchall` and the `/imitate` command. The bot will only export and study user messages from channels you specify in this table.
+    - Fill the `exportable_channels` table with Discord channel IDs you want to export user messages from
+        - This is for the `/export-all-messages` and the `/imitate` command. The bot will only export and study user messages from channels you specify in this table.
     - Fill the `insults` table with your own preferred insults
         - This is for the `/insult` command. It will use a random insult from this table.
     - Fill the `roll_riggings` table with users whose rolls you want to rig
@@ -63,12 +63,12 @@ node migrate.js
     - Fill the `user_permissions` table with the permissions you want to give to each user (including yourself)
         - Certain commands (such as `/terminate`) require a permission to use. You can find a command's required permissions in the command's class (`requiredPermissions` property). If there's none, then no permissions are required.
     - Fill the `voice_activity_reports` table with Discord server IDs and channel IDs where you want the bot to send automated daily/weekly/yearly reports about voice activity
-    - Fill the `x_words` table with your own preferred words to use for the `/word` command
+    - Fill the `random_words` table with your own preferred words to use for the `/random-word` command
 
 - Start the bot
 ```bash
 node bot.js
 ```
 
-- Run the `/fetchall` command to fetch all user messages (optional)
+- Run the `/export-all-messages` command to export all user messages (optional)
     - This might take a while.

@@ -1,18 +1,18 @@
 import * as Discord from 'discord.js';
-import FetchedWord from './FetchedWord.js';
+import ExportedWord from './ExportedWord.js';
 import Formatter from './Formatter.js';
 import DB from './DB.js';
 import Utils from './Utils.js';
 
-export default class MessageFetcher {
+export default class MessageExporter {
     /**
-     * Fetch words from a message and save them in the database.
+     * Export words from a message and save them in the database.
      *
      * @param {Discord.Message} message
      * @return {Promise<void>}
      */
     static async fromMessage(message) {
-        if (await this.isAlreadyFethced(message.id)) {
+        if (await this.isAlreadyExported(message.id)) {
             return;
         }
 
@@ -21,7 +21,7 @@ export default class MessageFetcher {
             .toLowerCase()
             .split(' ')
             .map(word => word.trim())
-            .filter(word => new FetchedWord({word}).canBeUsedToImitate());
+            .filter(word => new ExportedWord({word}).canBeUsedToImitate());
 
         // Add new words to existing wordlist
         for (let i = 0; i < newWords.length; i++) {
@@ -32,7 +32,7 @@ export default class MessageFetcher {
                 // Search for it
                 prev_id = (await DB.first(`
                     select *
-                    from fetched_words
+                    from exported_words
                     where word = :word
                     order by id desc
                     limit 1
@@ -40,7 +40,7 @@ export default class MessageFetcher {
             }
 
             await DB.query(`
-                insert into fetched_words (
+                insert into exported_words (
                     word,
                     prev_id,
                     author_id,
@@ -70,7 +70,7 @@ export default class MessageFetcher {
     }
 
     /**
-     * Fetch words from messages in a channel and save them in the database.
+     * Export words from messages in a channel and save them in the database.
      *
      * @param {string} channelId
      * @return {Promise<void>}
@@ -80,13 +80,13 @@ export default class MessageFetcher {
         let lastId;
 
         while (true) {
-            const fetchedMessages = await channel.messages.fetch({
+            const messages = await channel.messages.fetch({
                 limit: 100,
                 ...(lastId && { before: lastId }),
             });
 
             // Add new
-            for (const message of fetchedMessages.values()) {
+            for (const message of messages.values()) {
                 if (message.author.bot) {
                     continue;
                 }
@@ -95,34 +95,34 @@ export default class MessageFetcher {
             }
 
             // If there are no more messages left
-            if (fetchedMessages.size === 0) {
+            if (messages.size === 0) {
                 return;
             }
 
-            lastId = fetchedMessages.lastKey();
+            lastId = messages.lastKey();
         }
     }
 
     /**
-     * Check if fetching messages is allowed in the channel.
+     * Check if exporting messages is allowed in the channel.
      * 
      * @param {string} channelId 
      * @return {Promise<boolean>}
      */
-    static async isFetchableChannel(channelId) {
-        let results = await DB.query('select 1 from fetchable_channels where channel_id = :channelId and is_enabled = 1 limit 1', { channelId: channelId });
+    static async isExportableChannel(channelId) {
+        let results = await DB.query('select 1 from exportable_channels where channel_id = :channelId and is_enabled = 1 limit 1', { channelId: channelId });
 
         return results.length > 0;
     }
 
     /**
-     * Check if a message has already been fetched before.
+     * Check if a message has already been exported before.
      * 
      * @param {string} messageId 
      * @returns {Promise<boolean>}
      */
-    static async isAlreadyFethced(messageId) {
-        let results = await DB.query('select 1 from fetched_words where message_id = :messageId limit 1', { messageId: messageId });
+    static async isAlreadyExported(messageId) {
+        let results = await DB.query('select 1 from exported_words where message_id = :messageId limit 1', { messageId: messageId });
 
         return results.length > 0;
     }

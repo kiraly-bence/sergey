@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import DB from './DB.js';
 import Formatter from './Formatter.js';
 
-export default class FetchedWord {
+export default class ExportedWord {
     id;
     word;
     prev_id;
@@ -23,7 +23,7 @@ export default class FetchedWord {
      * @param {string} author_id
      * @param {number} offset
      * @param {number|null} days
-     * @return {Promise<FetchedWord|null>}
+     * @return {Promise<ExportedWord|null>}
      */
     static async getStarterWord(author_id, offset = 0, days = null) {
         const minDate = days
@@ -32,11 +32,11 @@ export default class FetchedWord {
 
         let results = await DB.query(`
             select *
-            from fetched_words
+            from exported_words
             where author_id = :authorId
             and channel_id in (
                 select channel_id
-                from fetchable_channels
+                from exportable_channels
                 where is_enabled = 1
             )
             and created_at >= :minDate
@@ -52,7 +52,7 @@ export default class FetchedWord {
         });
         
         return results.length > 0
-            ? new FetchedWord(results[0])
+            ? new ExportedWord(results[0])
             : null;
     }
 
@@ -61,7 +61,7 @@ export default class FetchedWord {
      *
      * @param {number} offset
      * @param {number|null} days
-     * @return {Promise<FetchedWord>}
+     * @return {Promise<ExportedWord>}
      */
     async getNextFollowingWord(offset = 0, days = null) {
         const minDate = days
@@ -73,15 +73,15 @@ export default class FetchedWord {
 
         let results = await DB.query(`
             select *
-            from fetched_words
+            from exported_words
             where prev_id in (
                 select id
-                from fetched_words
+                from exported_words
                 where word = :word
                 and author_id = :authorId
                 and channel_id in (
                     select channel_id
-                    from fetchable_channels
+                    from exportable_channels
                     where is_enabled = 1
                 )
                 and created_at >= :minDate
@@ -89,7 +89,7 @@ export default class FetchedWord {
             and author_id = :authorId
             and channel_id in (
                 select channel_id
-                from fetchable_channels
+                from exportable_channels
                 where is_enabled = 1
             )
             and created_at >= :minDate
@@ -105,7 +105,7 @@ export default class FetchedWord {
         });
         
         return results.length > 0
-            ? new FetchedWord(results[0])
+            ? new ExportedWord(results[0])
             : null;
     }
 

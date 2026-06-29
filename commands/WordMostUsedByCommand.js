@@ -5,7 +5,7 @@ import Utils from '../classes/Utils.js';
 
 export default class WordMostUsedByCommand extends Command {
     command = new Discord.SlashCommandBuilder()
-        .setName('wordmostusedby')
+        .setName('word-most-used-by')
         .setDescription('Check who uses a certain word most often.')
         .addStringOption(option =>
             option
@@ -19,11 +19,11 @@ export default class WordMostUsedByCommand extends Command {
 
         let results = await DB.query(`
             select author_id, count(*) as count
-            from fetched_words
+            from exported_words
             where word = :word
             and channel_id in (
                 select channel_id
-                from fetchable_channels
+                from exportable_channels
                 where is_enabled = 1
             )
             group by author_id
