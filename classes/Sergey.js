@@ -1,4 +1,5 @@
 import * as Discord from 'discord.js';
+import DB from './DB.js';
 import Log from './Log.js';
 import MessageScheduler from './MessageScheduler.js';
 import LolTracker from './LolTracker.js';
@@ -75,8 +76,8 @@ export default class Sergey {
     };
 
     static async init() {
-        await this.registerCommands();
-        await this.registerMiddlewares();
+        await Log.init();
+        await DB.init();
         await MessageScheduler.init();
         await Prison.init();
         await VoiceActivityTracker.init();
@@ -86,6 +87,8 @@ export default class Sergey {
             await LolTracker.init();
         }
 
+        await this.registerCommands();
+        await this.registerMiddlewares();
         this.registerClient();
     }
 
