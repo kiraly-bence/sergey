@@ -27,6 +27,8 @@ export default class Prison {
      * @return {Promise<void>}
      */
     static async addPrisonRule(userId, guildId, voiceChannelId, expiresAt) {
+        // TODO: ezt tranzakcióban kéne (meg utána kéne nézni, hogy hol máshol kellhet még tranzakció)
+
         // If the user is already prisoned, we free them first
         await this.freeUser(userId, guildId);
 
