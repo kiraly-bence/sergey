@@ -6,50 +6,56 @@ export default class VoiceActivityYearlyAverageChart extends BaseVoiceActivityCh
     static subtitle = 'Average number of users in voice channels (by months)';
 
     /**
-     * @param {object[]} voiceActivities
-     * @returns {number[]} 24 rounded averages, one per hour
+     * @param {object[]} sessionRows voice_sessions rows
+     * @returns {number[]} 12 rounded averages, January=0 to December=11
      */
-    static compute(voiceActivities) {
-        const sessionsByUser = VoiceActivity.buildSessionsByUser(voiceActivities);
+    static compute(sessionRows) {
+        const sessionsByUser = VoiceActivity.buildSessionsByUser(sessionRows);
+        const allYears = new Set();
 
-        // Collect all days across all sessions
-        const allDates = new Set();
-        for (const sessions of sessionsByUser.values()) {
-            for (const { start, end } of sessions) {
-                const day = new Date(start);
-                day.setHours(0, 0, 0, 0);
-                const endDay = new Date(end);
-                endDay.setHours(0, 0, 0, 0);
-                while (day <= endDay) {
-                    allDates.add(day.toDateString());
-                    day.setDate(day.getDate() + 1);
-                }
-            }
-        }
-        const totalDays = allDates.size;
-        if (totalDays === 0) return new Array(24).fill(0);
-
-        // For each hour slot, count distinct users active on each day
-        // hourActivity[h] = Map<dayKey, Set<userId>>
-        const hourActivity = new Array(24).fill(null).map(() => new Map());
-
-        for (const [userId, sessions] of sessionsByUser) {
+        for (const [userId, sessions] of Object.entries(sessionsByUser)) {
             for (const { start, end } of sessions) {
                 const cursor = new Date(start);
-                cursor.setMinutes(0, 0, 0);
-                while (cursor < end) {
-                    const hour = cursor.getHours();
-                    const dayKey = cursor.toDateString();
-                    if (!hourActivity[hour].has(dayKey)) hourActivity[hour].set(dayKey, new Set());
-                    hourActivity[hour].get(dayKey).add(userId);
-                    cursor.setHours(cursor.getHours() + 1);
+
+                while (cursor <= end) {
+                    allYears.add(cursor.getFullYear());
+                    cursor.setMonth(cursor.getMonth() + 1);
                 }
             }
         }
 
-        return hourActivity.map(dayMap => {
-            const total = [...dayMap.values()].reduce((sum, users) => sum + users.size, 0);
-            return Math.round(total / totalDays);
+        const totalYears = allYears.size;
+
+        if (totalYears === 0) {
+            return new Array(12).fill(0);
+        }
+
+        // activityByMonth[month] = Map<yearKey, Set<userId>>
+        const activityByMonth = new Array(12).fill(null).map(() => new Map());
+
+        for (const [userId, sessions] of Object.entries(sessionsByUser)) {
+            for (const { start, end } of sessions) {
+                const cursor = new Date(start);
+                cursor.setDate(1);
+                cursor.setHours(0, 0, 0, 0);
+
+                while (cursor <= end) {
+                    const month = cursor.getMonth();
+                    const yearKey = cursor.getFullYear();
+
+                    if (!activityByMonth[month].has(yearKey)) {
+                        activityByMonth[month].set(yearKey, new Set());
+                    }
+
+                    activityByMonth[month].get(yearKey).add(userId);
+                    cursor.setMonth(cursor.getMonth() + 1);
+                }
+            }
+        }
+
+        return activityByMonth.map(yearMap => {
+            const total = [...yearMap.values()].reduce((sum, users) => sum + users.size, 0);
+            return Math.round(total / totalYears);
         });
     }
 }

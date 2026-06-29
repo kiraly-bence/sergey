@@ -147,18 +147,19 @@ CREATE TABLE `user_permissions` (
 	UNIQUE INDEX `user_id_permission_id` (`user_id`, `permission`) USING BTREE
 );
 
-CREATE TABLE `voice_activities` (
+CREATE TABLE `voice_sessions` (
 	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 	`user_id` VARCHAR(255) NOT NULL,
 	`guild_id` VARCHAR(255) NOT NULL,
 	`voice_channel_id` VARCHAR(255) NOT NULL,
-	`type` ENUM('join','leave') NOT NULL,
-	`timestamp` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+	`joined_at` TIMESTAMP NOT NULL,
+	`left_at` TIMESTAMP NULL DEFAULT NULL,
 	PRIMARY KEY (`id`),
 	INDEX `user_id` (`user_id`),
+	INDEX `guild_id` (`guild_id`),
 	INDEX `voice_channel_id` (`voice_channel_id`),
-	INDEX `type` (`type`),
-	INDEX `guild_id` (`guild_id`)
+	INDEX `joined_at` (`joined_at`),
+	INDEX `left_at` (`left_at`)
 );
 
 CREATE TABLE `voice_activity_reports` (

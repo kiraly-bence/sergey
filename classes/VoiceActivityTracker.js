@@ -16,33 +16,17 @@ export default class VoiceActivityTracker {
      */
     static async init() {
         Sergey.client.on(Discord.Events.VoiceStateUpdate, async (oldState, newState) => {
-            // const activities = await DB.query(`
-            //     SELECT * FROM voice_activities
-            //     ORDER BY timestamp ASC
-            // `);
-
-            // const sessions = VoiceActivity.buildSessions_migrate(activities);
-
-            // for (const session of sessions) {
-            //     await DB.query(`
-            //         INSERT INTO voice_sessions (user_id, guild_id, voice_channel_id, joined_at, left_at)
-            //         VALUES (:user_id, :guild_id, :voice_channel_id, :join, :leave)
-            //     `, session);
-            // }
-            
             const user = newState.member ?? oldState.member;
             const guild = newState.guild ?? oldState.guild;
             const timestamp = new Date();
 
             if (oldState.channel && oldState.channel.id !== oldState.guild.afkChannelId) {
                 await this.logVoiceActivity(user.id, guild.id, oldState.channel.id, 'leave', timestamp);
-                await this.logVoiceActivity_session(user.id, guild.id, oldState.channel.id, 'leave', timestamp);
                 await this.logToConsole(guild, oldState.channel, user, 'leave');
             }
 
             if (newState.channel && newState.channel.id !== newState.guild.afkChannelId) {
                 await this.logVoiceActivity(user.id, guild.id, newState.channel.id, 'join', timestamp);
-                await this.logVoiceActivity_session(user.id, guild.id, newState.channel.id, 'join', timestamp);
                 await this.logToConsole(guild, newState.channel, user, 'join');
             }
         });
@@ -59,43 +43,6 @@ export default class VoiceActivityTracker {
      * @return {Promise<void>}
      */
     static async logVoiceActivity(userId, guildId, voiceChannelId, type, timestamp) {
-        await DB.query(`
-            insert into voice_activities (
-                user_id,
-                guild_id,
-                voice_channel_id,
-                type,
-                timestamp
-            ) values (
-                :user_id,
-                :guild_id,
-                :voice_channel_id,
-                :type,
-                :timestamp
-            )
-        `, {
-            user_id: userId,
-            guild_id: guildId,
-            voice_channel_id: voiceChannelId,
-            type: type,
-            timestamp: timestamp,
-        });
-    }
-
-    // TODO: párhuzamosan a mostani voice_activities táblával, el kéne kezdeni menteni egy voice_sessions táblát is
-    // azért, hogy már most el tudjak kezdeni vele dolgozni, és ne utólag kelljen migrálgatni
-
-    /**
-     * Logs voice activity for a user as a session.
-     *
-     * @param {string} userId
-     * @param {string} guildId
-     * @param {string} voiceChannelId
-     * @param {'join' | 'leave'} type
-     * @param {Date} timestamp
-     * @return {Promise<void>}
-     */
-    static async logVoiceActivity_session(userId, guildId, voiceChannelId, type, timestamp) {
         // Look for previous ongoing sessions
         const ongoingSessions = await DB.query(`
             select id, joined_at

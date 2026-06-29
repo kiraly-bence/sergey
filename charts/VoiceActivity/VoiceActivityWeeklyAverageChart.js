@@ -6,17 +6,18 @@ export default class VoiceActivityWeeklyAverageChart extends BaseVoiceActivityCh
     static subtitle = 'Average number of users in voice channels (by days)';
 
     /**
-     * @param {object[]} voiceActivities
+     * @param {object[]} sessionRows voice_sessions rows
      * @returns {number[]} 7 rounded averages, Monday=0 to Sunday=6
      */
-    static compute(voiceActivities) {
-        const sessionsByUser = VoiceActivity.buildSessionsByUser(voiceActivities);
-
+    static compute(sessionRows) {
+        const sessionsByUser = VoiceActivity.buildSessionsByUser(sessionRows);
         const allWeeks = new Set();
-        for (const sessions of sessionsByUser.values()) {
+
+        for (const [userId, sessions] of Object.entries(sessionsByUser)) {
             for (const { start, end } of sessions) {
                 const cursor = new Date(start);
                 cursor.setHours(0, 0, 0, 0);
+
                 while (cursor <= end) {
                     const monday = new Date(cursor);
                     monday.setDate(cursor.getDate() - ((cursor.getDay() + 6) % 7));
@@ -25,29 +26,38 @@ export default class VoiceActivityWeeklyAverageChart extends BaseVoiceActivityCh
                 }
             }
         }
+
         const totalWeeks = allWeeks.size;
-        if (totalWeeks === 0) return new Array(7).fill(0);
 
-        // dowActivity[monDay] = Map<weekKey, Set<userId>>
-        const dowActivity = new Array(7).fill(null).map(() => new Map());
+        if (totalWeeks === 0) {
+            return new Array(7).fill(0);
+        }
 
-        for (const [userId, sessions] of sessionsByUser) {
+        // activityByDayOfWeek[dayOfWeek] = Map<weekKey, Set<userId>>
+        const activityByDayOfWeek = new Array(7).fill(null).map(() => new Map());
+
+        for (const [userId, sessions] of Object.entries(sessionsByUser)) {
             for (const { start, end } of sessions) {
                 const cursor = new Date(start);
                 cursor.setHours(0, 0, 0, 0);
+
                 while (cursor <= end) {
-                    const monDay = (cursor.getDay() + 6) % 7;
+                    const dayOfWeek = (cursor.getDay() + 6) % 7;
                     const monday = new Date(cursor);
-                    monday.setDate(cursor.getDate() - monDay);
+                    monday.setDate(cursor.getDate() - dayOfWeek);
                     const weekKey = monday.toDateString();
-                    if (!dowActivity[monDay].has(weekKey)) dowActivity[monDay].set(weekKey, new Set());
-                    dowActivity[monDay].get(weekKey).add(userId);
+
+                    if (!activityByDayOfWeek[dayOfWeek].has(weekKey)) {
+                        activityByDayOfWeek[dayOfWeek].set(weekKey, new Set());
+                    }
+
+                    activityByDayOfWeek[dayOfWeek].get(weekKey).add(userId);
                     cursor.setDate(cursor.getDate() + 1);
                 }
             }
         }
 
-        return dowActivity.map(weekMap => {
+        return activityByDayOfWeek.map(weekMap => {
             const total = [...weekMap.values()].reduce((sum, users) => sum + users.size, 0);
             return Math.round(total / totalWeeks);
         });

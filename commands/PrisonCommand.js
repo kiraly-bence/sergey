@@ -61,6 +61,5 @@ export default class PrisonCommand extends Command {
         }
 
         await interaction.editReply(`Locked <@${member.id}> into <#${channel.id}> (expires at: ${expiresAt ? Formatter.formatTimestamp(expiresAt) : 'never'})`);
-        // TODO: hozzá kell adni a migrate.js-hez is ezt a táblát
     }
 }

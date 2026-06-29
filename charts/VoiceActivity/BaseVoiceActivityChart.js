@@ -7,7 +7,7 @@ export default class BaseVoiceActivityChart {
     static labels;
     static subtitle;
 
-    static compute(voiceActivities) {
+    static compute(sessionRows) {
         throw new Error('No computation action set.');
     }
 
@@ -99,15 +99,15 @@ export default class BaseVoiceActivityChart {
     /**
      * Generates the PNG buffer of a voice activity chart.
      * 
-     * @param {object[]} voiceActivities voice_activities rows
+     * @param {object[]} sessionRows voice_sessions rows
      * @param {string} displayName Display name for the chart title
      * @param {'daily' | 'weekly' | 'yearly'} interval
      * @param {'probability' | 'average'} calculationType
      * @returns {Promise<Buffer>} PNG buffer
      */
-    static async generate(voiceActivities, displayName, interval, calculationType) {
+    static async generate(sessionRows, displayName, interval, calculationType) {
         const svg = this.buildSVG(
-            this.compute(voiceActivities),
+            this.compute(sessionRows),
             this.labels,
             displayName,
             this.subtitle,

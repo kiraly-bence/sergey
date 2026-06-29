@@ -41,12 +41,11 @@ export default class VoiceActivityChartCommand extends Command {
             ? (user.globalName || user.username)
             : interaction.guild.name;
 
-        const voiceActivities = await DB.query(`
+        const sessions = await DB.query(`
             select *
-            from voice_activities
+            from voice_sessions
             where (:user_id is null or user_id = :user_id)
             and guild_id = :guild_id
-            order by timestamp
         `, {
             user_id: user?.id ?? null,
             guild_id: interaction.guild.id,
@@ -68,7 +67,7 @@ export default class VoiceActivityChartCommand extends Command {
         };
 
         const pngBuffer = await charts[interval][calculationType].generate(
-            voiceActivities,
+            sessions,
             displayName,
             interval,
             calculationType,

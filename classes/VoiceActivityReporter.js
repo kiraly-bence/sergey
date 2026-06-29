@@ -90,19 +90,18 @@ export default class VoiceActivityReporter {
      * @param {Date} end
      */
     static async sendGuildReport(guildId, channelId, interval, start, end) {
-        const voiceActivities = await DB.query(`
+        const sessions = await DB.query(`
             select *
-            from voice_activities
+            from voice_sessions
             where guild_id = :guild_id
             and timestamp between :start and :end
-            order by timestamp
         `, {
             guild_id: guildId,
             start: start,
             end: end,
         });
 
-        if (voiceActivities.length === 0) {
+        if (sessions.length === 0) {
             return;
         }
 
@@ -114,7 +113,7 @@ export default class VoiceActivityReporter {
 
         const guild = await Sergey.client.guilds.fetch(guildId);
         const channel = await guild.channels.fetch(channelId);
-        const pngBuffer = await charts[interval].generate(voiceActivities, guild.name, interval, 'average');
+        const pngBuffer = await charts[interval].generate(sessions, guild.name, interval, 'average');
 
         await channel.send({
             content: this.reportTitle(interval, start),

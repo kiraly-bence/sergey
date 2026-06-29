@@ -1,167 +1,97 @@
 import DB from '../classes/DB.js';
 
 /**
- * General helper class for voice activity related stuff (mostly used by commands).
+ * General helper class for voice activity related stuff.
  */
 export default class VoiceActivity {
     /**
-     * Builds voice sessions from voice_activities rows.
-     * If a session is currently ongoing and hasn't ended yet, it sets the end timestamp to now.
-     * 
-     * @param {object[]} voiceActivities
+     * Converts voice_session DB rows into session objects, and group them by user_id.
+     *
+     * @param {object[]} sessionRows voice_sessions rows
      * @returns {object[]}
      */
-    static buildSessions(voiceActivities) {
-        const sessions = [];
-        let pendingJoin = null;
-
-        for (const voiceActivity of voiceActivities) {
-            if (voiceActivity.type === 'join') {
-                pendingJoin = new Date(voiceActivity.timestamp);
-            } else if (voiceActivity.type === 'leave' && pendingJoin) {
-                sessions.push({ start: pendingJoin, end: new Date(voiceActivity.timestamp) });
-                pendingJoin = null;
-            }
-        }
-
-        if (pendingJoin) {
-            sessions.push({ start: pendingJoin, end: new Date() });
-        }
-
-        return sessions;
-    }
-
-    /**
-     * Builds sessions from raw join/leave activity rows.
-     *
-     * @param {Array<{id: string, user_id: string, guild_id: string, voice_channel_id: string, type: 'join'|'leave', timestamp: Date}>} activities
-     * @return {Array<{user_id: string, guild_id: string, voice_channel_id: string, join: Date, leave: Date|null}>}
-     */
-    static buildSessions_migrate(activities) {
-        const sessions = [];
-
-        // Group by user+guild
-        const groups = {};
-        for (const activity of activities) {
-            const key = `${activity.user_id}:${activity.guild_id}`;
-            if (!groups[key]) groups[key] = [];
-            groups[key].push(activity);
-        }
-
-        for (const rows of Object.values(groups)) {
-            // Ensure chronological order
-            rows.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-            let openSession = null;
-
-            for (const row of rows) {
-                if (row.type === 'join') {
-                    if (openSession) {
-                        // Two joins in a row — data error, close the previous one without a leave
-                        sessions.push(openSession);
-                    }
-                    openSession = {
-                        user_id:          row.user_id,
-                        guild_id:         row.guild_id,
-                        voice_channel_id: row.voice_channel_id,
-                        join:             row.timestamp,
-                        leave:            null,
-                    };
-
-                } else if (row.type === 'leave') {
-                    if (!openSession) {
-                        // Leave with no matching join — skip it
-                        continue;
-                    }
-                    openSession.leave = row.timestamp;
-                    sessions.push(openSession);
-                    openSession = null;
-                }
-            }
-
-            // Any session still open at the end had no matching leave
-            if (openSession) {
-                sessions.push(openSession);
-            }
-        }
-
-        return sessions;
-    }
-
-    /**
-     * Groups voiceActivities by user_id and builds sessions per user.
-     * Returns a map of userId -> sessions.
-     * 
-     * @param {object[]} voiceActivities
-     * @returns {Map<string, object[]>}
-     */
-    static buildSessionsByUser(voiceActivities) {
+    static buildSessionsByUser(sessionRows) {
         const byUser = {};
-        for (const voiceActivity of voiceActivities) {
-            if (!byUser[voiceActivity.user_id]) byUser[voiceActivity.user_id] = [];
-            byUser[voiceActivity.user_id].push(voiceActivity);
+
+        for (const sessionRow of sessionRows) {
+            if (!byUser[sessionRow.user_id]) {
+                byUser[sessionRow.user_id] = [];
+            }
+            
+            byUser[sessionRow.user_id].push(this.buildSession(sessionRow));
         }
 
-        const result = new Map();
-        for (const [userId, voiceActivitiesByUser] of Object.entries(byUser)) {
-            result.set(userId, this.buildSessions(voiceActivitiesByUser));
-        }
-        return result;
+        return byUser;
+    }
+
+    /**
+     * Convert a voice_sessions DB row into a session object.
+     * 
+     * @param {object} sessionRow voice_sessions row
+     * @returns {object}
+     */
+    static buildSession(sessionRow) {
+        let start = new Date(sessionRow.joined_at);
+        let isOngoing = sessionRow.left_at === null;
+        let end = isOngoing ? new Date() : new Date(sessionRow.left_at);
+        let length = end - start;
+
+        return {
+            start: start,
+            end: end,
+            isOngoing: isOngoing,
+            length: length,
+        };
     }
 
     /**
      * Returns the average daily voice usage for a user in a guild.
-     * 
-     * @param {*} userId
-     * @param {*} guildId
+     *
+     * @param {string} userId
+     * @param {string} guildId
      * @returns {Promise<number>} The average daily voice usage in milliseconds
      */
     static async getAverageDailyVoiceUsageOfUser(userId, guildId) {
-        const voiceActivities = await DB.query(`
-            select *
-            from voice_activities
+        let sessions = await DB.query(`
+            select joined_at, left_at
+            from voice_sessions
             where user_id = :user_id
             and guild_id = :guild_id
-            order by timestamp
+            order by joined_at
         `, {
             user_id: userId,
             guild_id: guildId,
         });
 
-        const sessions = this.buildSessions(voiceActivities);
+        sessions = sessions.map(session => this.buildSession(session));
 
         return this.calculateAverageDailySessionLength(sessions);
     }
 
     /**
-     * Returns the top 10 users by average daily voice usage in a guild.
-     * 
+     * Returns the top 10 users by total voice usage in a guild.
+     *
      * @param {string} guildId
      * @returns {Promise<object[]>}
      */
     static async getLeaderboard(guildId) {
-        const voiceActivities = await DB.query(`
-            select *
-            from voice_activities
+        const sessions = await DB.query(`
+            select user_id, joined_at, left_at
+            from voice_sessions
             where guild_id = :guild_id
-            order by timestamp
+            order by joined_at
         `, {
             guild_id: guildId,
         });
 
-        const sessionsByUser = this.buildSessionsByUser(voiceActivities);
-
+        const sessionsByUser = this.buildSessionsByUser(sessions);
         const results = [];
 
-        for (const [userId, sessions] of sessionsByUser) {
-            const totalMs = sessions.reduce((sum, { start, end }) => sum + (end - start), 0);
-            const avgMs = this.calculateAverageDailySessionLength(sessions);
+        for (const [userId, userSessions] of sessionsByUser) {
+            const totalMs = userSessions.reduce((sum, { start, end }) => sum + (end - start), 0);
+            const avgMs = this.calculateAverageDailySessionLength(userSessions);
 
-            results.push({
-                userId: userId,
-                totalMs: totalMs,
-                avgMs: avgMs,
-            });
+            results.push({ userId: userId, totalMs: totalMs, avgMs: avgMs });
         }
 
         return results
@@ -171,13 +101,15 @@ export default class VoiceActivity {
 
     /**
      * Calculates the average daily session length from session objects.
-     * It accurately handles sessions that go beyond midnight, or multiple sessions on the same day.
-     * 
-     * @param {*} sessions
+     * Accurately handles sessions that cross midnight or multiple sessions on the same day.
+     *
+     * @param {object[]} sessions
      * @returns {number} Average session length in milliseconds
      */
     static calculateAverageDailySessionLength(sessions) {
-        // TODO: az isOngoing session-öket nem kéne beleszámolni (hisz nem tudjuk előre, hogy meddig fog tartani)
+        // Exclude ongoing sessions
+        sessions = sessions.filter(session => !session.isOngoing);
+
         if (sessions.length === 0) {
             return 0;
         }
@@ -206,64 +138,28 @@ export default class VoiceActivity {
 
     /**
      * Returns the last voice session of a user.
-     * 
+     *
      * @param {string} userId
      * @param {string} guildId
-     * @returns {Promise<object>}
+     * @returns {Promise<object|null>}
      */
     static async getLastSession(userId, guildId) {
-        const lastJoin = await DB.first(`
-            select *
-            from voice_activities
+        const session = await DB.first(`
+            select joined_at, left_at
+            from voice_sessions
             where user_id = :user_id
             and guild_id = :guild_id
-            and type = 'join'
-            order by timestamp desc
+            order by joined_at desc
             limit 1
         `, {
             user_id: userId,
             guild_id: guildId,
         });
 
-        const lastLeave = await DB.first(`
-            select *
-            from voice_activities
-            where user_id = :user_id
-            and guild_id = :guild_id
-            and type = 'leave'
-            order by timestamp desc
-            limit 1
-        `, {
-            user_id: userId,
-            guild_id: guildId,
-        });
-
-        let voiceActivities = [];
-
-        if (lastJoin) {
-            voiceActivities.push(lastJoin);
-        } else {
+        if (!session) {
             return null;
         }
 
-        if (lastLeave) {
-            voiceActivities.push(lastLeave);
-        }
-
-        const sessions = this.buildSessions(voiceActivities);
-
-        if (sessions.length === 0) {
-            return null;
-        }
-
-        const lastSession = sessions[sessions.length - 1];
-        const isOngoing = !lastLeave;
-
-        return {
-            isOngoing: isOngoing,
-            start: lastSession.start,
-            end: lastSession.end,
-            length: lastSession.end - lastSession.start,
-        };
+        return this.buildSession(session);
     }
 }
