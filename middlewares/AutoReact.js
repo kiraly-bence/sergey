@@ -1,8 +1,14 @@
-import Middleware from './Middleware.js';
+import MessageMiddleware from './MessageMiddleware.js';
 import Formatter from '../classes/Formatter.js';
 import DB from '../classes/DB.js';
+import * as Discord from 'discord.js';
 
-export default class AutoReact extends Middleware {
+export default class AutoReact extends MessageMiddleware {
+    static requiredIntents = [
+        ...MessageMiddleware.requiredIntents,
+        Discord.GatewayIntentBits.GuildMessageReactions,
+    ];
+
     async shouldRun(message) {
         return !message.author.bot;
     }

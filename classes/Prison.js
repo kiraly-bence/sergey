@@ -4,13 +4,16 @@ import Sergey from './Sergey.js';
 
 export default class Prison {
     static async init() {
-        Sergey.client.on(Discord.Events.VoiceStateUpdate, async (oldState, newState) => {
-            // If the user disconnected from voice channels, we can't move him
-            if (!newState.channel) {
-                return;
-            }
+        Sergey.listeners.push({
+            event: Discord.Events.VoiceStateUpdate,
+            listener: async (oldState, newState) => {
+                // If the user disconnected from voice channels, we can't move him
+                if (!newState.channel) {
+                    return;
+                }
 
-            await Prison.moveUserToPrisonVoiceChannel(newState.member, newState.guild, newState.channel);
+                await Prison.moveUserToPrisonVoiceChannel(newState.member, newState.guild, newState.channel);
+            },
         });
     }
 

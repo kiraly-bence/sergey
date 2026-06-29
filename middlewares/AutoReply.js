@@ -1,9 +1,9 @@
-import * as Discord from 'discord.js';
-import Middleware from './Middleware.js';
+import MessageMiddleware from './MessageMiddleware.js';
 import Formatter from '../classes/Formatter.js';
 import DB from '../classes/DB.js';
+import * as Discord from 'discord.js';
 
-export default class AutoReply extends Middleware {
+export default class AutoReply extends MessageMiddleware {
     async shouldRun(message) {
         return !message.author.bot;
     }

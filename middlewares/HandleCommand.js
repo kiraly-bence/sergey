@@ -1,7 +1,7 @@
-import Middleware from './Middleware.js';
+import CommandMiddleware from './CommandMiddleware.js';
 import Sergey from '../classes/Sergey.js';
 
-export default class HandleCommand extends Middleware {
+export default class HandleCommand extends CommandMiddleware {
     async run(interaction) {
         const command = Sergey.commands.find(command => command.command.name === interaction.commandName);
 

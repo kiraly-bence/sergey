@@ -15,20 +15,25 @@ export default class VoiceActivityTracker {
      * @return {Promise<void>}
      */
     static async init() {
-        Sergey.client.on(Discord.Events.VoiceStateUpdate, async (oldState, newState) => {
-            const user = newState.member ?? oldState.member;
-            const guild = newState.guild ?? oldState.guild;
-            const timestamp = new Date();
+        Sergey.intents.add(Discord.GatewayIntentBits.GuildVoiceStates);
 
-            if (oldState.channel && oldState.channel.id !== oldState.guild.afkChannelId) {
-                await this.logVoiceActivity(user.id, guild.id, oldState.channel.id, 'leave', timestamp);
-                await this.logToConsole(guild, oldState.channel, user, 'leave');
-            }
+        Sergey.listeners.push({
+            event: Discord.Events.VoiceStateUpdate,
+            listener: async (oldState, newState) => {
+                const user = newState.member ?? oldState.member;
+                const guild = newState.guild ?? oldState.guild;
+                const timestamp = new Date();
 
-            if (newState.channel && newState.channel.id !== newState.guild.afkChannelId) {
-                await this.logVoiceActivity(user.id, guild.id, newState.channel.id, 'join', timestamp);
-                await this.logToConsole(guild, newState.channel, user, 'join');
-            }
+                if (oldState.channel && oldState.channel.id !== oldState.guild.afkChannelId) {
+                    await this.logVoiceActivity(user.id, guild.id, oldState.channel.id, 'leave', timestamp);
+                    await this.logToConsole(guild, oldState.channel, user, 'leave');
+                }
+
+                if (newState.channel && newState.channel.id !== newState.guild.afkChannelId) {
+                    await this.logVoiceActivity(user.id, guild.id, newState.channel.id, 'join', timestamp);
+                    await this.logToConsole(guild, newState.channel, user, 'join');
+                }
+            },
         });
     }
 

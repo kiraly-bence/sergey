@@ -5,7 +5,6 @@ import LolTracker from './LolTracker.js';
 import Prison from './Prison.js';
 import VoiceActivityTracker from './VoiceActivityTracker.js';
 import VoiceActivityReporter from './VoiceActivityReporter.js';
-import MiddlewareHandler from './MiddlewareHandler.js';
 import LogMessageToConsole from '../middlewares/LogMessageToConsole.js';
 import ExportWordsFromMessage from '../middlewares/ExportWordsFromMessage.js';
 import AutoReact from '../middlewares/AutoReact.js';
@@ -31,6 +30,19 @@ import WordMostUsedByCommand from '../commands/WordMostUsedByCommand.js';
 export default class Sergey {
     static client;
 
+    static intents = new Set([
+        Discord.GatewayIntentBits.Guilds,
+    ]);
+
+    static listeners = [
+        {
+            event: Discord.Events.ClientReady,
+            listener: () => {
+                Log.console(`Connected as ${this.client.user.tag}`);
+            },
+        },
+    ];
+
     static commands = [
         new ExportAllMessagesCommand(),
         new FreeCommand(),
@@ -49,9 +61,22 @@ export default class Sergey {
         new WordMostUsedByCommand(),
     ];
 
+    static middlewares = {
+        message: [
+            LogMessageToConsole,
+            ExportWordsFromMessage,
+            AutoReact,
+            AutoReply,
+        ],
+        command: [
+            HandleCommand,
+            LogCommandUsageToDatabase,
+        ],
+    };
+
     static async init() {
-        this.registerCommands();
-        this.registerClient();
+        await this.registerCommands();
+        await this.registerMiddlewares();
         await MessageScheduler.init();
         await Prison.init();
         await VoiceActivityTracker.init();
@@ -60,64 +85,34 @@ export default class Sergey {
         if (process.env.RIOT_API_TOKEN) {
             await LolTracker.init();
         }
+
+        this.registerClient();
     }
 
-    static registerCommands() {
+    static async registerCommands() {
         const discordApi = new Discord.REST().setToken(process.env.TOKEN);
 
-        discordApi.put(Discord.Routes.applicationCommands(process.env.CLIENT_ID), {
+        await discordApi.put(Discord.Routes.applicationCommands(process.env.CLIENT_ID), {
             body: this.commands.map(command => command.command),
         });
     }
 
+    static async registerMiddlewares() {
+        for (const [type, middlewares] of Object.entries(this.middlewares)) {
+            for (const middleware of middlewares) {
+                await middleware.init();
+            }
+        }
+    }
+
     static registerClient() {
-        // TODO: meg lehetne csinálni azt, hogy a különböző providerek adják hozzá a nekik kellő intent-eket a client-hez
         this.client = new Discord.Client({
-            intents: [
-                Discord.GatewayIntentBits.Guilds,
-                Discord.GatewayIntentBits.GuildMessages,
-                Discord.GatewayIntentBits.MessageContent,
-                Discord.GatewayIntentBits.GuildMessageReactions,
-                Discord.GatewayIntentBits.GuildEmojisAndStickers,
-                Discord.GatewayIntentBits.GuildVoiceStates,
-            ],
+            intents: [...this.intents],
         });
 
-        this.client.on(Discord.Events.ClientReady, () => {
-            Log.console(`Connected as ${this.client.user.tag}`);
-        });
-
-        // TODO: ezt ki lehetne szervezni 4 különböző providerbe
-        this.client.on(Discord.Events.MessageCreate, async message => {
-            try {
-                await MiddlewareHandler.call(message, [
-                    new LogMessageToConsole(),
-                    new ExportWordsFromMessage(),
-                    new AutoReact(),
-                    new AutoReply(),
-                ]);
-            } catch (err) {
-                Log.error(err);
-            }
-        });
-
-        // TODO: ezt ki lehetne szervezni 2 külön providerbe
-        this.client.on(Discord.Events.InteractionCreate, async interaction => {
-            if (!interaction.isChatInputCommand()) {
-                return;
-            }
-
-            try {
-                await MiddlewareHandler.call(interaction, [
-                    new HandleCommand(),
-                    new LogCommandUsageToDatabase(),
-                ]);
-            } catch (err) {
-                Log.error(err);
-            }
-        });
-
-        // TODO: a cél az lenne, hogy a providerek ilyen ki-be kapcsolható elemekként működjenek, és elég legyen csak 1 helyen hozzáadni/kiszedni őket, ne kelljen vadászni a különböző middleware-eket, intent-eket stb.
+        for (const listener of this.listeners) {
+            this.client.on(listener.event, listener.callback);
+        }
 
         this.client.login(process.env.TOKEN);
     }

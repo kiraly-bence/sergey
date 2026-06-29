@@ -1,7 +1,7 @@
-import Middleware from './Middleware.js';
+import CommandMiddleware from './CommandMiddleware.js';
 import DB from '../classes/DB.js';
 
-export default class LogCommandUsageToDatabase extends Middleware {
+export default class LogCommandUsageToDatabase extends CommandMiddleware {
     async run(interaction) {
         await DB.query(`
             insert into command_logs (
