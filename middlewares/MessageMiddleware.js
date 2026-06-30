@@ -16,9 +16,9 @@ export default class MessageMiddleware extends Middleware {
         Sergey.listeners.push({
             event: Discord.Events.MessageCreate,
             listener: async message => {
-                const middleware = new this();
-
                 try {
+                    const middleware = new this();
+
                     if (await middleware.shouldRun(message)) {
                         await middleware.run(message);
                     }

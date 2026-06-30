@@ -20,18 +20,22 @@ export default class VoiceActivityTracker {
         Sergey.listeners.push({
             event: Discord.Events.VoiceStateUpdate,
             listener: async (oldState, newState) => {
-                const user = newState.member ?? oldState.member;
-                const guild = newState.guild ?? oldState.guild;
-                const timestamp = new Date();
+                try {
+                    const user = newState.member ?? oldState.member;
+                    const guild = newState.guild ?? oldState.guild;
+                    const timestamp = new Date();
 
-                if (oldState.channel && oldState.channel.id !== oldState.guild.afkChannelId) {
-                    await this.logVoiceActivity(user.id, guild.id, oldState.channel.id, 'leave', timestamp);
-                    await this.logToConsole(guild, oldState.channel, user, 'leave');
-                }
+                    if (oldState.channel && oldState.channel.id !== oldState.guild.afkChannelId) {
+                        await this.logVoiceActivity(user.id, guild.id, oldState.channel.id, 'leave', timestamp);
+                        await this.logToConsole(guild, oldState.channel, user, 'leave');
+                    }
 
-                if (newState.channel && newState.channel.id !== newState.guild.afkChannelId) {
-                    await this.logVoiceActivity(user.id, guild.id, newState.channel.id, 'join', timestamp);
-                    await this.logToConsole(guild, newState.channel, user, 'join');
+                    if (newState.channel && newState.channel.id !== newState.guild.afkChannelId) {
+                        await this.logVoiceActivity(user.id, guild.id, newState.channel.id, 'join', timestamp);
+                        await this.logToConsole(guild, newState.channel, user, 'join');
+                    }
+                } catch (err) {
+                    Log.error(err);
                 }
             },
         });
@@ -64,14 +68,14 @@ export default class VoiceActivityTracker {
         if (type === 'join') {
             // If there are any ongoing sessions found, that means there's a data error, and we should delete them
             if (ongoingSessions.length > 0) {
-                const ids = ongoingSessions.map(r => r.id);
-
-                await DB.query(`
-                    delete from voice_sessions
-                    where id in (:ids)
-                `, {
-                    ids: ids,
-                });
+                for (const ongoingSession of ongoingSessions) {
+                    await DB.query(`
+                        delete from voice_sessions
+                        where id = :id
+                    `, {
+                        id: ongoingSession.id,
+                    });
+                }
             }
 
             // Insert the new session
@@ -101,14 +105,14 @@ export default class VoiceActivityTracker {
 
             // If there are multiple ongoing sessions found, that means there's a data error, and we should keep only the last one
             if (ongoingSessions.length > 1) {
-                const ids = ongoingSessions.slice(0, -1).map(r => r.id);
-
-                await DB.query(`
-                    delete from voice_sessions
-                    where id in (:ids)
-                `, {
-                    ids: ids,
-                });
+                for (const ongoingSession of ongoingSessions.slice(0, -1)) {
+                    await DB.query(`
+                        delete from voice_sessions
+                        where id = :id
+                    `, {
+                        id: ongoingSession.id,
+                    });
+                }
             }
 
             // This is the valid ongoing session

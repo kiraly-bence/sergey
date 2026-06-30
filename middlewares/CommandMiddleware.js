@@ -10,13 +10,13 @@ export default class CommandMiddleware extends Middleware {
         Sergey.listeners.push({
             event: Discord.Events.InteractionCreate,
             listener: async interaction => {
-                if (!interaction.isChatInputCommand()) {
-                    return;
-                }
-
-                const middleware = new this();
-                
                 try {
+                    if (!interaction.isChatInputCommand()) {
+                        return;
+                    }
+
+                    const middleware = new this();
+                
                     if (await middleware.shouldRun(interaction)) {
                         await middleware.run(interaction);
                     }

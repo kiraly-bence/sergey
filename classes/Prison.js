@@ -1,5 +1,6 @@
 import * as Discord from 'discord.js';
 import DB from './DB.js';
+import Log from './Log.js';
 import Sergey from './Sergey.js';
 
 export default class Prison {
@@ -7,12 +8,16 @@ export default class Prison {
         Sergey.listeners.push({
             event: Discord.Events.VoiceStateUpdate,
             listener: async (oldState, newState) => {
-                // If the user disconnected from voice channels, we can't move him
-                if (!newState.channel) {
-                    return;
-                }
+                try {
+                    // If the user disconnected from voice channels, we can't move him
+                    if (!newState.channel) {
+                        return;
+                    }
 
-                await Prison.moveUserToPrisonVoiceChannel(newState.member, newState.guild, newState.channel);
+                    await Prison.moveUserToPrisonVoiceChannel(newState.member, newState.guild, newState.channel);
+                } catch (err) {
+                    Log.error(err);
+                }
             },
         });
     }
