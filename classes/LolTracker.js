@@ -33,38 +33,42 @@ export default class LolTracker {
         await this.registerStaticData();
 
         setInterval(async () => {
-            let users = await this.getTrackedUsers();
+            try {
+                let users = await this.getTrackedUsers();
 
-            for (let user of users) {
-                try {
-                    let puuid = await this.getPuuid(user);
+                for (let user of users) {
+                    try {
+                        let puuid = await this.getPuuid(user);
 
-                    if (!puuid) {
-                        continue;
+                        if (!puuid) {
+                            continue;
+                        }
+
+                        let match = await this.fetchLatestMatch(user, puuid);
+
+                        if (!match) {
+                            continue;
+                        }
+
+                        if (await this.isTrackedMatch(match.metadata.matchId, user.id)) {
+                            continue;
+                        }
+
+                        await this.saveMatch(match, user.id);
+
+                        // Notifications should only be sent if the match ended recently
+                        if (Date.now() - match.info.gameEndTimestamp < this.RECENT_GAME_THRESHOLD_MINUTES * 60 * 1000) {
+                            await this.sendNotifications(match, puuid);
+                        }
+                    } catch (err) {
+                        Log.error(err);
                     }
-
-                    let match = await this.fetchLatestMatch(user, puuid);
-
-                    if (!match) {
-                        continue;
-                    }
-
-                    if (await this.isTrackedMatch(match.metadata.matchId, user.id)) {
-                        continue;
-                    }
-
-                    await this.saveMatch(match, user.id);
-
-                    // Notifications should only be sent if the match ended recently
-                    if (Date.now() - match.info.gameEndTimestamp < this.RECENT_GAME_THRESHOLD_MINUTES * 60 * 1000) {
-                        await this.sendNotifications(match, puuid);
-                    }
-                } catch (err) {
-                    Log.error(err);
                 }
-            }
 
-            this.matchCache.clear();
+                this.matchCache.clear();
+            } catch (err) {
+                Log.error(err);
+            }
         }, this.REFRESH_INTERVAL_SECONDS * 1000);
     }
 

@@ -1,5 +1,4 @@
 import Middleware from './Middleware.js';
-import Log from '../classes/Log.js';
 import Sergey from '../classes/Sergey.js';
 import * as Discord from 'discord.js';
 
@@ -16,14 +15,10 @@ export default class MessageMiddleware extends Middleware {
         Sergey.listeners.push({
             event: Discord.Events.MessageCreate,
             listener: async message => {
-                try {
-                    const middleware = new this();
+                const middleware = new this();
 
-                    if (await middleware.shouldRun(message)) {
-                        await middleware.run(message);
-                    }
-                } catch (err) {
-                    Log.error(err);
+                if (await middleware.shouldRun(message)) {
+                    await middleware.run(message);
                 }
             },
         });

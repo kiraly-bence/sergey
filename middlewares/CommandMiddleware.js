@@ -1,5 +1,4 @@
 import Middleware from './Middleware.js';
-import Log from '../classes/Log.js';
 import Sergey from '../classes/Sergey.js';
 import * as Discord from 'discord.js';
 
@@ -10,18 +9,14 @@ export default class CommandMiddleware extends Middleware {
         Sergey.listeners.push({
             event: Discord.Events.InteractionCreate,
             listener: async interaction => {
-                try {
-                    if (!interaction.isChatInputCommand()) {
-                        return;
-                    }
+                if (!interaction.isChatInputCommand()) {
+                    return;
+                }
 
-                    const middleware = new this();
-                
-                    if (await middleware.shouldRun(interaction)) {
-                        await middleware.run(interaction);
-                    }
-                } catch (err) {
-                    Log.error(err);
+                const middleware = new this();
+            
+                if (await middleware.shouldRun(interaction)) {
+                    await middleware.run(interaction);
                 }
             },
         });

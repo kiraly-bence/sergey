@@ -116,7 +116,13 @@ export default class Sergey {
         });
 
         for (const listener of this.listeners) {
-            this.client.on(listener.event, listener.listener);
+            this.client.on(listener.event, (...params) => {
+                try {
+                    listener.listener(...params);
+                } catch (err) {
+                    Log.error(err);
+                }
+            });
         }
 
         this.client.login(process.env.TOKEN);

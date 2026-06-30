@@ -11,19 +11,23 @@ export default class MessageScheduler {
 
     static async init() {
         setInterval(async () => {
-            let messages = await DB.query('select * from scheduled_messages where is_enabled = 1');
+            try {
+                let messages = await DB.query('select * from scheduled_messages where is_enabled = 1');
 
-            for (let message of messages) {
-                let isRegistered = this.isRegistered(message);
-                let isChanged = this.isChanged(message);
+                for (let message of messages) {
+                    let isRegistered = this.isRegistered(message);
+                    let isChanged = this.isChanged(message);
 
-                if (!isRegistered || isChanged) {
-                    if (isRegistered && isChanged) {
-                        this.clearJob(message.id);
+                    if (!isRegistered || isChanged) {
+                        if (isRegistered && isChanged) {
+                            this.clearJob(message.id);
+                        }
+
+                        this.scheduleMessage(message);
                     }
-
-                    this.scheduleMessage(message);
                 }
+            } catch (err) {
+                Log.error(err);
             }
         }, this.REFRESH_INTERVAL_SECONDS * 1000);
     }
