@@ -20,21 +20,23 @@ export default class VoiceActivityTracker {
         Sergey.listeners.push({
             event: Discord.Events.VoiceStateUpdate,
             listener: async (oldState, newState) => {
+                // Camera, mute, deafen etc. trigger a voice activity event, so we only log if the before/after voice channel isn't the same
+                if (oldState.channel?.id === newState.channel?.id) {
+                    return;
+                }
+
                 const user = newState.member ?? oldState.member;
                 const guild = newState.guild ?? oldState.guild;
                 const timestamp = new Date();
 
-                // Camera, mute, deafen etc. trigger a voice activity event, so we only log if the before/after voice channel isn't the same
-                if (oldState.channel?.id !== newState.channel?.id) {
-                    if (oldState.channel && oldState.channel.id !== oldState.guild.afkChannelId) {
-                        await this.logVoiceActivity(user.id, guild.id, oldState.channel.id, 'leave', timestamp);
-                        await this.logToConsole(guild, oldState.channel, user, 'leave');
-                    }
+                if (oldState.channel && oldState.channel.id !== oldState.guild.afkChannelId) {
+                    await this.logVoiceActivity(user.id, guild.id, oldState.channel.id, 'leave', timestamp);
+                    await this.logToConsole(guild, oldState.channel, user, 'leave');
+                }
 
-                    if (newState.channel && newState.channel.id !== newState.guild.afkChannelId) {
-                        await this.logVoiceActivity(user.id, guild.id, newState.channel.id, 'join', timestamp);
-                        await this.logToConsole(guild, newState.channel, user, 'join');
-                    }
+                if (newState.channel && newState.channel.id !== newState.guild.afkChannelId) {
+                    await this.logVoiceActivity(user.id, guild.id, newState.channel.id, 'join', timestamp);
+                    await this.logToConsole(guild, newState.channel, user, 'join');
                 }
             },
         });
