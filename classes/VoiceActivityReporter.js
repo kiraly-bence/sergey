@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import Discord from 'discord.js';
+import * as Discord from 'discord.js';
 import DB from './DB.js';
 import Log from './Log.js';
 import Sergey from './Sergey.js';
