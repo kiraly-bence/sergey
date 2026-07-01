@@ -45,10 +45,9 @@ export default class Log {
      * @return {void}
      */
     static error(err) {
-        let timestamp = Formatter.formatTimestamp(new Date());
         let errorMessage = err.stack || err.message || err;
 
-        console.error(`[${timestamp}] ${errorMessage}`);
+        this.console(errorMessage);
         this.file('error', errorMessage);
     }
 
