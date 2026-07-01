@@ -108,7 +108,8 @@ export default class VoiceActivityReporter {
             select *
             from voice_sessions
             where guild_id = :guild_id
-            and timestamp between :start and :end
+            and joined_at < :end
+            and (left_at is null or left_at > :start)
         `, {
             guild_id: guildId,
             start: start,
