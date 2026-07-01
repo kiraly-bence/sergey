@@ -1,6 +1,6 @@
 import MessageMiddleware from './MessageMiddleware.js';
-import Log from '../classes/Log.js';
-import Formatter from '../classes/Formatter.js';
+import Log from '../../classes/Log.js';
+import Formatter from '../../classes/Formatter.js';
 import * as Discord from 'discord.js';
 
 export default class LogMessageToConsole extends MessageMiddleware {

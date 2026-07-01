@@ -1,6 +1,6 @@
 import MessageMiddleware from './MessageMiddleware.js';
-import Formatter from '../classes/Formatter.js';
-import DB from '../classes/DB.js';
+import Formatter from '../../classes/Formatter.js';
+import DB from '../../classes/DB.js';
 import * as Discord from 'discord.js';
 
 export default class AutoReact extends MessageMiddleware {

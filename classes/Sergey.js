@@ -6,12 +6,12 @@ import LolTracker from './LolTracker.js';
 import Prison from './Prison.js';
 import VoiceActivityTracker from './VoiceActivityTracker.js';
 import VoiceActivityReporter from './VoiceActivityReporter.js';
-import LogMessageToConsole from '../middlewares/LogMessageToConsole.js';
-import ExportWordsFromMessage from '../middlewares/ExportWordsFromMessage.js';
-import AutoReact from '../middlewares/AutoReact.js';
-import AutoReply from '../middlewares/AutoReply.js';
-import HandleCommand from '../middlewares/HandleCommand.js';
-import LogCommandUsageToDatabase from '../middlewares/LogCommandUsageToDatabase.js';
+import LogMessageToConsole from '../middlewares/message/LogMessageToConsole.js';
+import ExportWordsFromMessage from '../middlewares/message/ExportWordsFromMessage.js';
+import AutoReact from '../middlewares/message/AutoReact.js';
+import AutoReply from '../middlewares/message/AutoReply.js';
+import HandleCommand from '../middlewares/command/HandleCommand.js';
+import LogCommandUsageToDatabase from '../middlewares/command/LogCommandUsageToDatabase.js';
 import ExportAllMessagesCommand from '../commands/ExportAllMessagesCommand.js';
 import FreeCommand from '../commands/FreeCommand.js';
 import ImgCommand from '../commands/ImgCommand.js';
@@ -63,15 +63,15 @@ export default class Sergey {
     ];
 
     static middlewares = {
+        command: [
+            HandleCommand,
+            LogCommandUsageToDatabase,
+        ],
         message: [
             LogMessageToConsole,
             ExportWordsFromMessage,
             AutoReact,
             AutoReply,
-        ],
-        command: [
-            HandleCommand,
-            LogCommandUsageToDatabase,
         ],
     };
 
