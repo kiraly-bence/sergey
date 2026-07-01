@@ -151,6 +151,8 @@ export default class VoiceActivityReporter {
                 return `📊 Weekly voice activity report for week of ${start.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`;
             case 'yearly':
                 return `📊 Yearly voice activity report for ${start.getFullYear()}`;
+            default:
+                throw new Error(`Unknown interval: ${interval}`);
         }
     }
 }
