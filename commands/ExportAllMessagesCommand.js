@@ -1,7 +1,7 @@
-import Command from '#commands/Command.js';
-import DB from '#classes/DB.js';
-import Log from '#classes/Log.js';
-import MessageExporter from '#classes/MessageExporter.js';
+import Command from '#/commands/Command.js';
+import DB from '#/classes/DB.js';
+import Log from '#/classes/Log.js';
+import MessageExporter from '#/classes/MessageExporter.js';
 import * as Discord from 'discord.js';
 
 export default class ExportAllMessagesCommand extends Command {

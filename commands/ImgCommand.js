@@ -1,5 +1,5 @@
-import Command from '#commands/Command.js';
-import Utils from '#classes/Utils.js';
+import Command from '#/commands/Command.js';
+import Utils from '#/classes/Utils.js';
 import DuckDuckGo from '@mudbill/duckduckgo-images-api';
 import * as Discord from 'discord.js';
 

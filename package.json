@@ -1,10 +1,7 @@
 {
   "type": "module",
   "imports": {
-    "#charts/*": "./charts/*",
-    "#classes/*": "./classes/*",
-    "#commands/*": "./commands/*",
-    "#middlewares/*": "./middlewares/*"
+    "#/*": "./*"
   },
   "dependencies": {
     "@mudbill/duckduckgo-images-api": "^2.0.1",

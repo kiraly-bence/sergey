@@ -1,5 +1,5 @@
-import CommandMiddleware from '#middlewares/command/CommandMiddleware.js';
-import Sergey from '#classes/Sergey.js';
+import CommandMiddleware from '#/middlewares/command/CommandMiddleware.js';
+import Sergey from '#/classes/Sergey.js';
 
 export default class HandleCommand extends CommandMiddleware {
     async run(interaction) {

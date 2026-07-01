@@ -1,11 +1,11 @@
 import cron from 'node-cron';
 import * as Discord from 'discord.js';
-import DB from '#classes/DB.js';
-import Log from '#classes/Log.js';
-import Sergey from '#classes/Sergey.js';
-import VoiceActivityDailyAverageChart from '#charts/VoiceActivity/VoiceActivityDailyAverageChart.js';
-import VoiceActivityWeeklyAverageChart from '#charts/VoiceActivity/VoiceActivityWeeklyAverageChart.js';
-import VoiceActivityYearlyAverageChart from '#charts/VoiceActivity/VoiceActivityYearlyAverageChart.js';
+import DB from '#/classes/DB.js';
+import Log from '#/classes/Log.js';
+import Sergey from '#/classes/Sergey.js';
+import VoiceActivityDailyAverageChart from '#/charts/VoiceActivity/VoiceActivityDailyAverageChart.js';
+import VoiceActivityWeeklyAverageChart from '#/charts/VoiceActivity/VoiceActivityWeeklyAverageChart.js';
+import VoiceActivityYearlyAverageChart from '#/charts/VoiceActivity/VoiceActivityYearlyAverageChart.js';
 
 /**
  * Responsible for sending automated reports of voice activity on the server.

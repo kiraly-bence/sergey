@@ -1,5 +1,5 @@
-import Command from '#commands/Command.js';
-import DB from '#classes/DB.js';
+import Command from '#/commands/Command.js';
+import DB from '#/classes/DB.js';
 import * as Discord from 'discord.js';
 
 export default class RandomWordCommand extends Command {

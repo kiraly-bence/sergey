@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 import * as fs from 'node:fs';
-import Log from '#classes/Log.js';
-import DB from '#classes/DB.js';
+import Log from '#/classes/Log.js';
+import DB from '#/classes/DB.js';
 
 // Parse .env variables
 dotenv.config();

@@ -1,5 +1,5 @@
-import CommandMiddleware from '#middlewares/command/CommandMiddleware.js';
-import DB from '#classes/DB.js';
+import CommandMiddleware from '#/middlewares/command/CommandMiddleware.js';
+import DB from '#/classes/DB.js';
 
 export default class LogCommandUsageToDatabase extends CommandMiddleware {
     async run(interaction) {

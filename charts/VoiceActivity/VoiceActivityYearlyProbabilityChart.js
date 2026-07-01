@@ -1,5 +1,5 @@
-import BaseVoiceActivityChart from '#charts/VoiceActivity/BaseVoiceActivityChart.js';
-import VoiceActivity from '#classes/VoiceActivity.js';
+import BaseVoiceActivityChart from '#/charts/VoiceActivity/BaseVoiceActivityChart.js';
+import VoiceActivity from '#/classes/VoiceActivity.js';
 
 export default class VoiceActivityYearlyProbabilityChart extends BaseVoiceActivityChart {
     static labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

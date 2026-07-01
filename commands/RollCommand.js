@@ -1,7 +1,7 @@
-import Command from '#commands/Command.js';
-import Emote from '#classes/Emote.js';
-import DB from '#classes/DB.js';
-import Utils from '#classes/Utils.js';
+import Command from '#/commands/Command.js';
+import Emote from '#/classes/Emote.js';
+import DB from '#/classes/DB.js';
+import Utils from '#/classes/Utils.js';
 import * as Discord from 'discord.js';
 
 export default class RollCommand extends Command {

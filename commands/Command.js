@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import Permission from '#classes/Permission.js';
+import Permission from '#/classes/Permission.js';
 
 export default class Command {
     command;

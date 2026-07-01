@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import DB from '#classes/DB.js';
-import Formatter from '#classes/Formatter.js';
+import DB from '#/classes/DB.js';
+import Formatter from '#/classes/Formatter.js';
 
 export default class ExportedWord {
     id;

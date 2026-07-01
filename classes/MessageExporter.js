@@ -1,7 +1,7 @@
-import ExportedWord from '#classes/ExportedWord.js';
-import Formatter from '#classes/Formatter.js';
-import DB from '#classes/DB.js';
-import Utils from '#classes/Utils.js';
+import ExportedWord from '#/classes/ExportedWord.js';
+import Formatter from '#/classes/Formatter.js';
+import DB from '#/classes/DB.js';
+import Utils from '#/classes/Utils.js';
 import * as Discord from 'discord.js';
 
 export default class MessageExporter {

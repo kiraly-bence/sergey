@@ -1,9 +1,9 @@
 import axios from 'axios';
-import Emote from '#classes/Emote.js';
-import Formatter from '#classes/Formatter.js';
-import DB from '#classes/DB.js';
-import Log from '#classes/Log.js';
-import Sergey from '#classes/Sergey.js';
+import Emote from '#/classes/Emote.js';
+import Formatter from '#/classes/Formatter.js';
+import DB from '#/classes/DB.js';
+import Log from '#/classes/Log.js';
+import Sergey from '#/classes/Sergey.js';
 import * as Discord from 'discord.js';
 
 export default class LolTracker {

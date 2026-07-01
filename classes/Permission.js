@@ -1,5 +1,5 @@
-import DB from '#classes/DB.js';
-import Sergey from '#classes/Sergey.js';
+import DB from '#/classes/DB.js';
+import Sergey from '#/classes/Sergey.js';
 import * as Discord from 'discord.js';
 
 export default class Permission {

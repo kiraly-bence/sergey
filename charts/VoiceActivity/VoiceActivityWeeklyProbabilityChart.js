@@ -1,5 +1,5 @@
-import BaseVoiceActivityChart from '#charts/VoiceActivity/BaseVoiceActivityChart.js';
-import VoiceActivity from '#classes/VoiceActivity.js';
+import BaseVoiceActivityChart from '#/charts/VoiceActivity/BaseVoiceActivityChart.js';
+import VoiceActivity from '#/classes/VoiceActivity.js';
 
 export default class VoiceActivityWeeklyProbabilityChart extends BaseVoiceActivityChart {
     static labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];

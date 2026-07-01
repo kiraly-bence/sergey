@@ -1,4 +1,4 @@
-import Formatter from '#classes/Formatter.js';
+import Formatter from '#/classes/Formatter.js';
 import winston from 'winston';
 import 'winston-daily-rotate-file';
 

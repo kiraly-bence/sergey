@@ -1,5 +1,5 @@
-import Middleware from '#middlewares/Middleware.js';
-import Sergey from '#classes/Sergey.js';
+import Middleware from '#/middlewares/Middleware.js';
+import Sergey from '#/classes/Sergey.js';
 import * as Discord from 'discord.js';
 
 export default class CommandMiddleware extends Middleware {

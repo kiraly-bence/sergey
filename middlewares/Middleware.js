@@ -1,4 +1,4 @@
-import Sergey from '#classes/Sergey.js';
+import Sergey from '#/classes/Sergey.js';
 
 export default class Middleware {
     static requiredIntents = [];

@@ -1,8 +1,8 @@
-import DB from '#classes/DB.js';
-import Formatter from '#classes/Formatter.js';
-import Log from '#classes/Log.js';
-import Sergey from '#classes/Sergey.js';
-import VoiceActivity from '#classes/VoiceActivity.js';
+import DB from '#/classes/DB.js';
+import Formatter from '#/classes/Formatter.js';
+import Log from '#/classes/Log.js';
+import Sergey from '#/classes/Sergey.js';
+import VoiceActivity from '#/classes/VoiceActivity.js';
 import * as Discord from 'discord.js';
 
 /**
