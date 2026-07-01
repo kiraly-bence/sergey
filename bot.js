@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import Sergey from './classes/Sergey.js';
+import Sergey from '#classes/Sergey.js';
 
 // Parse .env variables
 dotenv.config();

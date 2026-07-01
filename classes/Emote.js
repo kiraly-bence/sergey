@@ -1,4 +1,4 @@
-import DB from './DB.js';
+import DB from '#classes/DB.js';
 
 export default class Emote {
     static async get(name, fallback = null) {

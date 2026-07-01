@@ -1,5 +1,5 @@
-import Command from './Command.js';
-import Log from '../classes/Log.js';
+import Command from '#commands/Command.js';
+import Log from '#classes/Log.js';
 import * as Discord from 'discord.js';
 
 export default class TerminateCommand extends Command {

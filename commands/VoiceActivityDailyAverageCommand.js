@@ -1,6 +1,6 @@
-import Command from './Command.js';
-import Formatter from '../classes/Formatter.js';
-import VoiceActivity from '../classes/VoiceActivity.js';
+import Command from '#commands/Command.js';
+import Formatter from '#classes/Formatter.js';
+import VoiceActivity from '#classes/VoiceActivity.js';
 import * as Discord from 'discord.js';
 
 export default class VoiceActivityDailyAverageCommand extends Command {

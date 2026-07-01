@@ -1,8 +1,8 @@
 import schedule from 'node-schedule';
+import DB from '#classes/DB.js';
+import Log from '#classes/Log.js';
+import Sergey from '#classes/Sergey.js';
 import * as Discord from 'discord.js';
-import DB from './DB.js';
-import Log from './Log.js';
-import Sergey from './Sergey.js';
 
 export default class MessageScheduler {
     static REFRESH_INTERVAL_SECONDS = 10;

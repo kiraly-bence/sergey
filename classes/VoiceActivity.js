@@ -1,4 +1,4 @@
-import DB from '../classes/DB.js';
+import DB from '#classes/DB.js';
 
 /**
  * General helper class for voice activity related stuff.

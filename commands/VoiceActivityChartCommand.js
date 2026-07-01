@@ -1,11 +1,11 @@
-import Command from './Command.js';
-import DB from '../classes/DB.js';
-import VoiceActivityDailyAverageChart from '../charts/VoiceActivity/VoiceActivityDailyAverageChart.js';
-import VoiceActivityDailyProbabilityChart from '../charts/VoiceActivity/VoiceActivityDailyProbabilityChart.js';
-import VoiceActivityWeeklyAverageChart from '../charts/VoiceActivity/VoiceActivityWeeklyAverageChart.js';
-import VoiceActivityWeeklyProbabilityChart from '../charts/VoiceActivity/VoiceActivityWeeklyProbabilityChart.js';
-import VoiceActivityYearlyAverageChart from '../charts/VoiceActivity/VoiceActivityYearlyAverageChart.js';
-import VoiceActivityYearlyProbabilityChart from '../charts/VoiceActivity/VoiceActivityYearlyProbabilityChart.js';
+import Command from '#commands/Command.js';
+import DB from '#classes/DB.js';
+import VoiceActivityDailyAverageChart from '#charts/VoiceActivity/VoiceActivityDailyAverageChart.js';
+import VoiceActivityDailyProbabilityChart from '#charts/VoiceActivity/VoiceActivityDailyProbabilityChart.js';
+import VoiceActivityWeeklyAverageChart from '#charts/VoiceActivity/VoiceActivityWeeklyAverageChart.js';
+import VoiceActivityWeeklyProbabilityChart from '#charts/VoiceActivity/VoiceActivityWeeklyProbabilityChart.js';
+import VoiceActivityYearlyAverageChart from '#charts/VoiceActivity/VoiceActivityYearlyAverageChart.js';
+import VoiceActivityYearlyProbabilityChart from '#charts/VoiceActivity/VoiceActivityYearlyProbabilityChart.js';
 import * as Discord from 'discord.js';
 
 export default class VoiceActivityChartCommand extends Command {

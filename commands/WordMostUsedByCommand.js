@@ -1,7 +1,7 @@
-import Command from './Command.js';
-import DB from '../classes/DB.js';
+import Command from '#commands/Command.js';
+import DB from '#classes/DB.js';
+import Utils from '#classes/Utils.js';
 import * as Discord from 'discord.js';
-import Utils from '../classes/Utils.js';
 
 export default class WordMostUsedByCommand extends Command {
     command = new Discord.SlashCommandBuilder()

@@ -1,5 +1,5 @@
+import Sergey from '#classes/Sergey.js';
 import * as Discord from 'discord.js';
-import Sergey from './Sergey.js';
 
 export default class Utils {
     /**

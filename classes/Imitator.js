@@ -1,4 +1,4 @@
-import ExportedWord from './ExportedWord.js';
+import ExportedWord from '#classes/ExportedWord.js';
 
 export default class Imitator {
     author_id;

@@ -1,5 +1,5 @@
-import Command from './Command.js';
-import Imitator from '../classes/Imitator.js';
+import Command from '#commands/Command.js';
+import Imitator from '#classes/Imitator.js';
 import * as Discord from 'discord.js';
 
 export default class ImitateCommand extends Command {

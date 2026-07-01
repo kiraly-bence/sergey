@@ -1,5 +1,5 @@
-import BaseVoiceActivityChart from './BaseVoiceActivityChart.js';
-import VoiceActivity from '../../classes/VoiceActivity.js';
+import BaseVoiceActivityChart from '#charts/VoiceActivity/BaseVoiceActivityChart.js';
+import VoiceActivity from '#classes/VoiceActivity.js';
 
 export default class VoiceActivityDailyAverageChart extends BaseVoiceActivityChart {
     static labels = Array.from({ length: 24 }, (_, i) => i.toString());

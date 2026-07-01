@@ -1,8 +1,8 @@
-import Command from './Command.js';
-import * as Discord from 'discord.js';
+import Command from '#commands/Command.js';
 import axios from 'axios';
-import Formatter from '../classes/Formatter.js';
-import Utils from '../classes/Utils.js';
+import Formatter from '#classes/Formatter.js';
+import Utils from '#classes/Utils.js';
+import * as Discord from 'discord.js';
 
 export default class RedditCommand extends Command {
     command = new Discord.SlashCommandBuilder()

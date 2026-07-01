@@ -1,10 +1,10 @@
 import axios from 'axios';
-import Emote from './Emote.js';
-import DB from './DB.js';
-import Log from './Log.js';
-import Sergey from './Sergey.js';
+import Emote from '#classes/Emote.js';
+import Formatter from '#classes/Formatter.js';
+import DB from '#classes/DB.js';
+import Log from '#classes/Log.js';
+import Sergey from '#classes/Sergey.js';
 import * as Discord from 'discord.js';
-import Formatter from './Formatter.js';
 
 export default class LolTracker {
     static REFRESH_INTERVAL_SECONDS = 120;

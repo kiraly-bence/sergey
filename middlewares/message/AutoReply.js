@@ -1,6 +1,6 @@
-import MessageMiddleware from './MessageMiddleware.js';
-import Formatter from '../../classes/Formatter.js';
-import DB from '../../classes/DB.js';
+import MessageMiddleware from '#middlewares/message/MessageMiddleware.js';
+import Formatter from '#classes/Formatter.js';
+import DB from '#classes/DB.js';
 import * as Discord from 'discord.js';
 
 export default class AutoReply extends MessageMiddleware {

@@ -1,5 +1,5 @@
-import MessageMiddleware from './MessageMiddleware.js';
-import MessageExporter from '../../classes/MessageExporter.js';
+import MessageMiddleware from '#middlewares/message/MessageMiddleware.js';
+import MessageExporter from '#classes/MessageExporter.js';
 
 export default class ExportWordsFromMessage extends MessageMiddleware {
     async shouldRun(message) {

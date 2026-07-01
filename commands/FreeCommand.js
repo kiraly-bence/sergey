@@ -1,5 +1,5 @@
-import Command from './Command.js';
-import Prison from '../classes/Prison.js';
+import Command from '#commands/Command.js';
+import Prison from '#classes/Prison.js';
 import * as Discord from 'discord.js';
 
 export default class FreeCommand extends Command {
