@@ -1,6 +1,7 @@
 import Command from '#/commands/Command.js';
 import axios from 'axios';
 import Formatter from '#/classes/Formatter.js';
+import Log from '#/classes/Log.js';
 import Utils from '#/classes/Utils.js';
 import * as Discord from 'discord.js';
 
@@ -21,12 +22,15 @@ export default class RedditCommand extends Command {
         let subreddit = interaction.options.getString('subreddit');
         let resp;
 
-        resp = await axios.get(`https://www.reddit.com/r/${subreddit}/top.json?t=all`, {
-            params: {
-                limit: 100,
-            },
-        }).catch(async err => {
-            switch (err.response.status) {
+        try {
+            resp = await axios.get(`https://www.reddit.com/r/${subreddit}/top.json`, {
+                params: {
+                    t: 'all',
+                    limit: 100,
+                },
+            });
+        } catch (err) {
+            switch (err?.response?.status) {
                 case 403:
                     await interaction.editReply('The command was used too often and Reddit detected it as spam. Please wait for a bit and try again.');
                     return;
@@ -34,10 +38,13 @@ export default class RedditCommand extends Command {
                 case 404:
                     await interaction.editReply(`r/${subreddit} doesn't exist.`);
                     return;
+                
+                default:
+                    await interaction.editReply('Unknown error.');
+                    Log.error(err);
+                    return;
             }
-
-            throw err;
-        });
+        }
         
         const allowedTypes = ['jpg', 'png', 'webp', 'gif'];
 
