@@ -13,6 +13,8 @@ export default class ImgCommand extends Command {
                 .setDescription('The keyword you want to search for.')
                 .setRequired(true)
         );
+    
+    requiredPermissions = ['ImgCommand'];
 
     async execute(interaction) {
         let keyword = interaction.options.getString('keyword');
