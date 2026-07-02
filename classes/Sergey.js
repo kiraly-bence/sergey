@@ -87,8 +87,6 @@ export default class Sergey {
             await LolTracker.init();
         }
 
-        // TODO: Fortnite tracker
-
         await this.registerCommands();
         await this.registerMiddlewares();
         this.registerClient();
