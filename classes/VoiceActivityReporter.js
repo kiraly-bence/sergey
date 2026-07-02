@@ -1,4 +1,4 @@
-import cron from 'node-cron';
+import schedule from 'node-schedule';
 import * as Discord from 'discord.js';
 import DB from '#/classes/DB.js';
 import Log from '#/classes/Log.js';
@@ -13,7 +13,7 @@ import VoiceActivityYearlyAverageChart from '#/charts/VoiceActivity/VoiceActivit
 export default class VoiceActivityReporter {
     static init() {
         // Daily report - every day at 23:59
-        cron.schedule('59 23 * * *', async () => {
+        schedule.scheduleJob('59 23 * * *', async () => {
             try {
                 await this.sendDailyReports();
             } catch (err) {
@@ -22,7 +22,7 @@ export default class VoiceActivityReporter {
         });
 
         // Weekly report - every Sunday at 23:59
-        cron.schedule('59 23 * * 0', async () => {
+        schedule.scheduleJob('59 23 * * 0', async () => {
             try {
                 await this.sendWeeklyReports();
             } catch (err) {
@@ -31,7 +31,7 @@ export default class VoiceActivityReporter {
         });
 
         // Yearly report - every Dec 31 at 23:59
-        cron.schedule('59 23 31 12 *', async () => {
+        schedule.scheduleJob('59 23 31 12 *', async () => {
             try {
                 await this.sendYearlyReports();
             } catch (err) {
