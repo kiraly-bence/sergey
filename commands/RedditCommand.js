@@ -15,6 +15,8 @@ export default class RedditCommand extends Command {
                 .setRequired(true)
         );
 
+    requiredPermissions = ['RedditCommand'];
+
     async execute(interaction) {
         let subreddit = interaction.options.getString('subreddit');
         let resp;
